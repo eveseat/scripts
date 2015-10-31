@@ -1,4 +1,3 @@
-#!/bin/bash
 echo " * SeAT CentOS 6.x Auto Installer"
 echo
 echo "Warning: This script will install SeAT onto this server."
