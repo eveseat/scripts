@@ -115,7 +115,7 @@ yum install git -y
 echo " * Getting SeAT Setup"
 echo
 cd /var/www
-composer create-project eveseat/seat seat -s dev --keep-vcs
+composer create-project eveseat/seat seat --keep-vcs
 
 echo " * Configuring Permissions"
 echo
