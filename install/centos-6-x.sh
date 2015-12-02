@@ -137,11 +137,11 @@ sed -i -r "s/CACHE_DRIVER=file/CACHE_DRIVER=redis/" /var/www/seat/.env
 sed -i -r "s/QUEUE_DRIVER=sync/QUEUE_DRIVER=redis/" /var/www/seat/.env
 
 # Run artisan commands
-php artisan vendor:publish --force
+php artisan vendor:publish
 php artisan migrate
 php artisan db:seed --class=Seat\\Services\\database\\seeds\\NotificationTypesSeeder
 php artisan db:seed --class=Seat\\Services\\database\\seeds\\ScheduleSeeder
-php artisan db:seed --class=Seat\\Notifications\\database\\seeds\\ScheduleSeeder
+php artisan eve:update-sde -n
 
 echo " * Setting Up Supervisor"
 echo
