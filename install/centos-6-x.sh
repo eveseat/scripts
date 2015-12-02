@@ -139,7 +139,9 @@ sed -i -r "s/QUEUE_DRIVER=sync/QUEUE_DRIVER=redis/" /var/www/seat/.env
 # Run artisan commands
 php artisan vendor:publish --force
 php artisan migrate
-php artisan db:seed
+php artisan db:seed --class=Seat\\Services\\database\\seeds\\NotificationTypesSeeder
+php artisan db:seed --class=Seat\\Services\\database\\seeds\\ScheduleSeeder
+php artisan db:seed --class=Seat\\Notifications\\database\\seeds\\ScheduleSeeder
 
 echo " * Setting Up Supervisor"
 echo
