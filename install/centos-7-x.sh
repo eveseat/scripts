@@ -56,7 +56,7 @@ yum-config-manager --enable remi,remi-php55
 # Install MySQL. expect is installed to automate the mysql_secure_installation
 echo " * Installing MySQL Server"
 echo
-yum install -y mariadb-server
+yum install -y mariadb-server expect
 systemctl enable mariadb.service
 systemctl start mariadb.service
 
