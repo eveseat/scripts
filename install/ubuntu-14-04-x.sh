@@ -77,7 +77,7 @@ echo
 echo " * Setting up PHP & Apache"
 echo
 add-apt-repository ppa:ondrej/php5-5.6 -y
-apt-get install apache2 php5 php5-cli php5-mcrypt php5-intl php5-mysql -y
+apt-get install apache2 php5 php5-cli php5-mcrypt php5-intl php5-mysql php5-curl -y
 
 echo " * Setting up Redis"
 echo
