@@ -99,7 +99,7 @@ echo " * Setting up PHP & Apache"
 echo
 yum install -y httpd php php-mysql php-cli php-mcrypt php-process php-mbstring php-intl php-dom
 systemctl enable httpd.service
-ystemctl start httpd.service
+systemctl start httpd.service
 
 echo " * Configuring Firewall"
 firewall-cmd --zone=public --add-port=80/tcp --add-port=443/tcp --permanent
