@@ -155,7 +155,7 @@ systemctl enable supervisord.service
 
 echo " * Configuring Supervisor for 4 workers"
 echo
-cat >>/etc/supervisor/conf.d/seat.ini <<EOL
+cat >>/etc/supervisord.d/seat.ini <<EOL
 [program:seat]
 command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 10 --timeout=3600
 process_name = %(program_name)s-80%(process_num)02d
@@ -190,7 +190,7 @@ echo "ServerSignature Off" >> /etc/httpd/conf/httpd.conf
 
 echo " * Setting Up Apache Virtual Host"
 mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.backup
-ln -s /var/www/seat/public /var/www/html/seat.local/seat
+ln -s /var/www/seat/public /var/www/html/seat.local
 cat >>/etc/httpd/conf.d/seat.local.conf <<EOL
 <VirtualHost *:80>
     ServerAdmin webmaster@your.domain
@@ -207,7 +207,6 @@ cat >>/etc/httpd/conf.d/seat.local.conf <<EOL
 </VirtualHost>
 EOL
 apachectl restart
-apachectl -t -D DUMP_VHOSTS
 
 echo
 echo " ** Done. Remember to set the admin password with: php artisan seat:admin:reset"
