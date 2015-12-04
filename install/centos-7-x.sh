@@ -42,7 +42,7 @@ rpm --import http://download.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
 
 echo " * Installing Remi Repository"
 echo
-REMI=remi-release-6.rpm && curl -O http://rpms.remirepo.net/enterprise/$REMI && yum localinstall -y $REMI && rm -f $REMI
+REMI=remi-release-7.rpm && curl -O http://rpms.remirepo.net/enterprise/$REMI && yum localinstall -y $REMI && rm -f $REMI
 
 echo " * Configuring Remi GPG"
 echo
