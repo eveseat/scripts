@@ -1,3 +1,4 @@
+![SeAT](http://i.imgur.com/aPPOxSK.png)
 # scripts
 
 ## This repository contains the SeAT Scripts
