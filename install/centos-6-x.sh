@@ -206,8 +206,13 @@ supervisorctl status
 
 echo " * Adding crontab entry"
 echo
-line="* * * * * /usr/bin/php /var/www/seat/artisan schedule:run 1>> /dev/null 2>&1"
-(crontab -u apache -l; echo "$line" ) | crontab -u apache -
+TMP_TAB=$(mktemp)
+set +e  # Temporarily stop the errexit option for the crontab listing
+crontab -u apache -l > ${TMP_TAB}
+set -e  # Restore errexit
+echo "* * * * * /usr/bin/php /var/www/seat/artisan schedule:run 1>> /dev/null 2>&1" >> ${TMP_TAB}
+crontab -u apache ${TMP_TAB}
+rm ${TMP_TAB}
 
 echo " * Setting Up Apache Virtual Host"
 mkdir /var/www/html/seat.local
@@ -233,4 +238,3 @@ apachectl -t -D DUMP_VHOSTS
 echo
 echo " ** Done. Remember to set the admin password with: php artisan seat:admin:reset"
 echo
-
