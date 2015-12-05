@@ -215,8 +215,7 @@ crontab -u apache ${TMP_TAB}
 rm ${TMP_TAB}
 
 echo " * Setting Up Apache Virtual Host"
-mkdir /var/www/html/seat.local
-ln -s /var/www/seat/public /var/www/html/seat.local/seat
+ln -s /var/www/seat/public /var/www/html/seat.local
 cat >>/etc/httpd/conf.d/seat.local.conf <<EOL
 <VirtualHost *:80>
     ServerAdmin webmaster@your.domain
