@@ -38,7 +38,7 @@ EPEL=epel-release-latest-7.noarch.rpm && curl -O https://dl.fedoraproject.org/pu
 
 echo " * Configuring EPEL GPG"
 echo
-rpm --import http://download.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+rpm --import "http://download.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7"
 
 echo " * Installing Remi Repository"
 echo
