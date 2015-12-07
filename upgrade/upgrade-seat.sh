@@ -20,7 +20,7 @@ php artisan down
 echo " * Updating composer itself"
 composer self-update
 echo " * Updating SeAT packages"
-composer update
+composer update --no-dev
 echo " * Publishing vendor directories"
 php artisan vendor:publish --force
 echo " * Running any database migrations"
