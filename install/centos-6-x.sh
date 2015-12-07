@@ -97,7 +97,7 @@ echo
 
 echo " * Setting up PHP & Apache"
 echo
-yum install -y httpd php php-mysql php-cli php-mcrypt php-process php-mbstring php-intl php-dom
+yum install -y httpd php php-mysql php-cli php-mcrypt php-process php-mbstring php-intl php-dom php-gd
 /etc/init.d/httpd start
 chkconfig httpd on
 
