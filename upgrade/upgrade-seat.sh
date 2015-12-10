@@ -13,8 +13,16 @@ echo
 
 set -e
 
-echo " * Changing directories to /var/www/seat"
-cd /var/www/seat
+read -p "Where is your SeAT installation ? " seatpath
+
+if [ ! -d "$seatpath" ]; then
+	echo "The specified SeAT installation path '$seatpath' does not exist."
+	echo "SeAT Auto Upgrader will now exit."
+	exit 1
+fi
+
+echo " * Changing directories to '$seatpath'"
+cd $seatpath
 echo " * Putting SeAT into maintenance mode"
 php artisan down
 echo " * Updating composer itself"
@@ -28,4 +36,3 @@ php artisan migrate
 echo " * Taking SeAT out of maintenance mode"
 php artisan up
 echo " * Done"
-
