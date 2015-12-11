@@ -1,15 +1,15 @@
 echo " * SeAT Auto Upgrader"
-echo
+echo -en '\n'
 echo "Be sure to read the source before continuing if you are unsure."
-echo
+echo -en '\n'
 
 read -p "Are you sure you want to continue? (y/n) " -n 1 -r
-echo
+echo -en '\n'
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
     exit 1
 fi
-echo
+echo -en '\n'
 
 set -e
 
