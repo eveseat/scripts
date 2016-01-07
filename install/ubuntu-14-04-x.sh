@@ -76,9 +76,7 @@ echo
 
 echo " * Setting up PHP & Apache"
 echo
-PHPVER=$(php -r 'echo (version_compare(phpversion(), "5.6") >= 0);');
-
-if [ ! $PHPVER ]
+if ! command -v php || ! php -r 'echo (version_compare(phpversion(), "5.6") >= 0);'
 then
     sudo apt-get install software-properties-common -y
     add-apt-repository ppa:ondrej/php5-5.6 -y
