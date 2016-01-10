@@ -20,6 +20,17 @@ if [ $EUID != 0 ]; then
     exit 1
 fi
 
+read -p "Where do you want install SeAT ? " seatpath
+
+if [ -d "$seatpath" ]; then
+	echo "The specified SeAT installation path '$seatpath' does already exist."
+	echo "SeAT Auto Installer will now exit."
+	exit 1
+else
+	echo "The SeAT Auto Installer will now install SeAT to this location '$seatpath'"
+	mkdir $seatpath
+fi
+
 # Generate some data that we need to work with
 MYSQL_ROOT_PASS=$(echo -e `date` | md5sum | awk '{ print $1 }');
 sleep 1
@@ -118,28 +129,28 @@ yum install git -y
 
 echo " * Getting SeAT Setup"
 echo
-cd /var/www
-composer create-project eveseat/seat seat --keep-vcs --prefer-source --no-dev
+cd $seatpath
+composer create-project eveseat/seat $seatpath --keep-vcs --prefer-source --no-dev
 
 echo " * Configuring Permissions"
 echo
-chown -R apache:apache /var/www/seat
-chmod -R guo+w /var/www/seat/storage/
+chown -R apache:apache $seatpath
+chmod -R guo+w $seatpath/storage/
 
 echo " * Configuring SELinux"
 echo
 setsebool -P httpd_can_network_connect 1
 setsebool -P httpd_unified 1
-restorecon -Rv /var/www/seat
+restorecon -Rv $seatpath
 
 echo " * Configuring SeAT itself"
 echo
-cd /var/www/seat
-sed -i -r "s/DB_DATABASE=homestead/DB_DATABASE=seat/" /var/www/seat/.env
-sed -i -r "s/DB_USERNAME=homestead/DB_USERNAME=seat/" /var/www/seat/.env
-sed -i -r "s/DB_PASSWORD=secret/DB_PASSWORD=$SEAT_DB_PASS/" /var/www/seat/.env
-sed -i -r "s/CACHE_DRIVER=file/CACHE_DRIVER=redis/" /var/www/seat/.env
-sed -i -r "s/QUEUE_DRIVER=sync/QUEUE_DRIVER=redis/" /var/www/seat/.env
+cd $seatpath
+sed -i -r "s/DB_DATABASE=homestead/DB_DATABASE=seat/" $seatpath/.env
+sed -i -r "s/DB_USERNAME=homestead/DB_USERNAME=seat/" $seatpath/.env
+sed -i -r "s/DB_PASSWORD=secret/DB_PASSWORD=$SEAT_DB_PASS/" $seatpath/.env
+sed -i -r "s/CACHE_DRIVER=file/CACHE_DRIVER=redis/" $seatpath/.env
+sed -i -r "s/QUEUE_DRIVER=sync/QUEUE_DRIVER=redis/" $seatpath/.env
 
 # Run artisan commands
 php artisan vendor:publish
@@ -157,13 +168,13 @@ echo " * Configuring Supervisor for 4 workers"
 echo
 cat >>/etc/supervisord.d/seat.ini <<EOL
 [program:seat]
-command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 10 --timeout=3600
+command=/usr/bin/php $seatpath/artisan queue:listen --queue=high,medium,low,default --tries 10 --timeout=3600
 process_name = %(program_name)s-80%(process_num)02d
 stdout_logfile = /var/log/seat-80%(process_num)02d.log
 stdout_logfile_maxbytes=100MB
 stdout_logfile_backups=10
 numprocs=4
-directory=/var/www/seat
+directory=$seatpath
 stopwaitsecs=600
 user=apache
 EOL
@@ -177,7 +188,7 @@ TMP_TAB=$(mktemp)
 set +e  # Temporarily stop the errexit option for the crontab listing
 crontab -u apache -l > ${TMP_TAB}
 set -e  # Restore errexit
-echo "* * * * * /usr/bin/php /var/www/seat/artisan schedule:run 1>> /dev/null 2>&1" >> ${TMP_TAB}
+echo "* * * * * /usr/bin/php $seatpath/artisan schedule:run 1>> /dev/null 2>&1" >> ${TMP_TAB}
 crontab -u apache ${TMP_TAB}
 rm -f ${TMP_TAB}
 
@@ -190,16 +201,15 @@ echo "ServerSignature Off" >> /etc/httpd/conf/httpd.conf
 
 echo " * Setting Up Apache Virtual Host"
 mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.backup
-ln -s /var/www/seat/public /var/www/html/seat.local
 cat >>/etc/httpd/conf.d/seat.local.conf <<EOL
 <VirtualHost *:80>
     ServerAdmin webmaster@your.domain
-    DocumentRoot "/var/www/html/seat.local"
+    DocumentRoot "$seatpath/public"
     ServerName seat.local
     ServerAlias www.seat.local
     ErrorLog "logs/seat.local-error_log"
     CustomLog "logs/seat.local-access_log" common
-    <Directory "/var/www/html/seat.local">
+    <Directory "$seatpath/public">
         AllowOverride All
         Order allow,deny
         Allow from all
