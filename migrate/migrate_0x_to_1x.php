@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-namespace Seat\DistUpgrade {
+namespace Seat\Migrate {
 
     use PDO;
 
@@ -309,8 +309,50 @@ namespace Seat\DistUpgrade {
                 echo "\033[0;31m [FAILED]\033[0m\n";
             }
 
+            echo "\033[0;34m migrating character_killmail_items to kill_mail_items...\033[0m        ";
+            if (self::upgradeCharacterKillItem()) {
+                echo "\033[0;32m [SUCCESS]\033[0m\n";
+            } else {
+                echo "\033[0;31m [FAILED]\033[0m\n";
+            }
+
+            echo "\033[0;34m migrating character_killmail_detail to kill_mail_details...\033[0m        ";
+            if (self::upgradeCharacterKillDetail()) {
+                echo "\033[0;32m [SUCCESS]\033[0m\n";
+            } else {
+                echo "\033[0;31m [FAILED]\033[0m\n";
+            }
+
+            echo "\033[0;34m migrating character_killmail_attackers to kill_mail_attackers...\033[0m        ";
+            if (self::upgradeCharacterKillAttacker()) {
+                echo "\033[0;32m [SUCCESS]\033[0m\n";
+            } else {
+                echo "\033[0;31m [FAILED]\033[0m\n";
+            }
+
             echo "\033[0;34m migrating corporation_killmails to corporation_kill_mails...\033[0m        ";
             if (self::upgradeCorporationKill()) {
+                echo "\033[0;32m [SUCCESS]\033[0m\n";
+            } else {
+                echo "\033[0;31m [FAILED]\033[0m\n";
+            }
+
+            echo "\033[0;34m migrating corporation_killmail_items to kill_mail_items...\033[0m        ";
+            if (self::upgradeCorporationKillItem()) {
+                echo "\033[0;32m [SUCCESS]\033[0m\n";
+            } else {
+                echo "\033[0;31m [FAILED]\033[0m\n";
+            }
+
+            echo "\033[0;34m migrating corporation_killmail_detail to kill_mail_details...\033[0m        ";
+            if (self::upgradeCorporationKillDetail()) {
+                echo "\033[0;32m [SUCCESS]\033[0m\n";
+            } else {
+                echo "\033[0;31m [FAILED]\033[0m\n";
+            }
+
+            echo "\033[0;34m migrating corporation_killmail_attackers to kill_mail_attackers...\033[0m        ";
+            if (self::upgradeCorporationKillAttacker()) {
                 echo "\033[0;32m [SUCCESS]\033[0m\n";
             } else {
                 echo "\033[0;31m [FAILED]\033[0m\n";
@@ -388,6 +430,90 @@ namespace Seat\DistUpgrade {
             return true;
         }
 
+        private static function upgradeCharacterKillItem()
+        {
+            self::initMigratingFlag("character_killmail_items");
+            if (self::statusMigratingFlag("character_killmail_items")) {
+                return true;
+            }
+
+            $q = self::$_oldDatabase->prepare("SELECT COUNT(*) AS nb_rows FROM character_killmail_items");
+            $q->execute();
+            $nb_rows = $q->fetch(PDO::FETCH_ASSOC)['nb_rows'];
+            $q->closeCursor();
+
+            $migrated_line = 0;
+            for ($curr_row = 0; $curr_row <= $nb_rows; $curr_row += self::$_maxRows) {
+                $rows = CharacterUpgrade::fetchOldKillItem(self::$_oldDatabase, $curr_row, self::$_maxRows);
+                foreach ($rows as $row) {
+                    if (CharacterUpgrade::insertNewKillItem(self::$_newDatabase, $row)) {
+                        Helper::displayProgress(++$migrated_line, $nb_rows);
+                    } else {
+                        return false;
+                    }
+                }
+            }
+
+            self::updateMigratingFlag("character_killmail_items");
+            return true;
+        }
+
+        private static function upgradeCharacterKillAttacker()
+        {
+            self::initMigratingFlag("character_killmail_attackers");
+            if (self::statusMigratingFlag("character_killmail_attackers")) {
+                return true;
+            }
+
+            $q = self::$_oldDatabase->prepare("SELECT COUNT(*) AS nb_rows FROM character_killmail_attackers");
+            $q->execute();
+            $nb_rows = $q->fetch(PDO::FETCH_ASSOC)['nb_rows'];
+            $q->closeCursor();
+
+            $migrated_line = 0;
+            for ($curr_row = 0; $curr_row <= $nb_rows; $curr_row += self::$_maxRows) {
+                $rows = CharacterUpgrade::fetchOldKillAttacker(self::$_oldDatabase, $curr_row, self::$_maxRows);
+                foreach ($rows as $row) {
+                    if (CharacterUpgrade::insertNewKillAttacker(self::$_newDatabase, $row)) {
+                        Helper::displayProgress(++$migrated_line, $nb_rows);
+                    } else {
+                        return false;
+                    }
+                }
+            }
+
+            self::updateMigratingFlag("character_killmail_attackers");
+            return true;
+        }
+
+        private static function upgradeCharacterKillDetail()
+        {
+            self::initMigratingFlag("character_killmail_detail");
+            if (self::statusMigratingFlag("character_killmail_detail")) {
+                return true;
+            }
+
+            $q = self::$_oldDatabase->prepare("SELECT COUNT(*) AS nb_rows FROM character_killmail_detail");
+            $q->execute();
+            $nb_rows = $q->fetch(PDO::FETCH_ASSOC)['nb_rows'];
+            $q->closeCursor();
+
+            $migrated_line = 0;
+            for ($curr_row = 0; $curr_row <= $nb_rows; $curr_row += self::$_maxRows) {
+                $rows = CharacterUpgrade::fetchOldKillDetail(self::$_oldDatabase, $curr_row, self::$_maxRows);
+                foreach ($rows as $row) {
+                    if (CharacterUpgrade::insertNewKillDetail(self::$_newDatabase, $row)) {
+                        Helper::displayProgress(++$migrated_line, $nb_rows);
+                    } else {
+                        return false;
+                    }
+                }
+            }
+
+            self::updateMigratingFlag("character_killmail_detail");
+            return true;
+        }
+
         private static function upgradeCorporationKill()
         {
             self::initMigratingFlag("corporation_killmails");
@@ -413,6 +539,90 @@ namespace Seat\DistUpgrade {
             }
 
             self::updateMigratingFlag("corporation_killmails");
+            return true;
+        }
+
+        private static function upgradeCorporationKillItem()
+        {
+            self::initMigratingFlag("corporation_killmail_items");
+            if (self::statusMigratingFlag("corporation_killmail_items")) {
+                return true;
+            }
+
+            $q = self::$_oldDatabase->prepare("SELECT COUNT(*) AS nb_rows FROM corporation_killmail_items");
+            $q->execute();
+            $nb_rows = $q->fetch(PDO::FETCH_ASSOC)['nb_rows'];
+            $q->closeCursor();
+
+            $migrated_line = 0;
+            for ($curr_row = 0; $curr_row <= $nb_rows; $curr_row += self::$_maxRows) {
+                $rows = CharacterUpgrade::fetchOldKillItem(self::$_oldDatabase, $curr_row, self::$_maxRows);
+                foreach ($rows as $row) {
+                    if (CharacterUpgrade::insertNewKillItem(self::$_newDatabase, $row)) {
+                        Helper::displayProgress(++$migrated_line, $nb_rows);
+                    } else {
+                        return false;
+                    }
+                }
+            }
+
+            self::updateMigratingFlag("corporation_killmail_items");
+            return true;
+        }
+
+        private static function upgradeCorporationKillAttacker()
+        {
+            self::initMigratingFlag("corporation_killmail_attackers");
+            if (self::statusMigratingFlag("corporation_killmail_attackers")) {
+                return true;
+            }
+
+            $q = self::$_oldDatabase->prepare("SELECT COUNT(*) AS nb_rows FROM corporation_killmail_attackers");
+            $q->execute();
+            $nb_rows = $q->fetch(PDO::FETCH_ASSOC)['nb_rows'];
+            $q->closeCursor();
+
+            $migrated_line = 0;
+            for ($curr_row = 0; $curr_row <= $nb_rows; $curr_row += self::$_maxRows) {
+                $rows = CharacterUpgrade::fetchOldKillAttacker(self::$_oldDatabase, $curr_row, self::$_maxRows);
+                foreach ($rows as $row) {
+                    if (CharacterUpgrade::insertNewKillAttacker(self::$_newDatabase, $row)) {
+                        Helper::displayProgress(++$migrated_line, $nb_rows);
+                    } else {
+                        return false;
+                    }
+                }
+            }
+
+            self::updateMigratingFlag("corporation_killmail_attackers");
+            return true;
+        }
+
+        private static function upgradeCorporationKillDetail()
+        {
+            self::initMigratingFlag("corporation_killmail_detail");
+            if (self::statusMigratingFlag("corporation_killmail_detail")) {
+                return true;
+            }
+
+            $q = self::$_oldDatabase->prepare("SELECT COUNT(*) AS nb_rows FROM corporation_killmail_detail");
+            $q->execute();
+            $nb_rows = $q->fetch(PDO::FETCH_ASSOC)['nb_rows'];
+            $q->closeCursor();
+
+            $migrated_line = 0;
+            for ($curr_row = 0; $curr_row <= $nb_rows; $curr_row += self::$_maxRows) {
+                $rows = CharacterUpgrade::fetchOldKillDetail(self::$_oldDatabase, $curr_row, self::$_maxRows);
+                foreach ($rows as $row) {
+                    if (CharacterUpgrade::insertNewKillDetail(self::$_newDatabase, $row)) {
+                        Helper::displayProgress(++$migrated_line, $nb_rows);
+                    } else {
+                        return false;
+                    }
+                }
+            }
+
+            self::updateMigratingFlag("corporation_killmail_detail");
             return true;
         }
 
@@ -597,7 +807,7 @@ namespace Seat\DistUpgrade {
             }
 
             // Api Key Upgrade
-            echo "\033[0;34m migrating seat_keys to eve_api_keys...\033[0m\n        ";
+            echo "\033[0;34m migrating seat_keys to eve_api_keys...\033[0m        ";
             if (self::upgradeKey()){
                 echo "\033[0;32m [SUCCESS]\033[0m\n";
             } else {
@@ -959,6 +1169,115 @@ namespace Seat\DistUpgrade {
             return $result;
         }
 
+        public static function fetchOldKillAttacker(PDO $db, $start, $limit)
+        {
+            $sql = "SELECT killID, characterID, characterName, corporationID, corporationName, allianceID, ".
+                "allianceName, factionID, factionName, securityStatus, damageDone, finalBlow, weaponTypeID, ".
+                "shipTypeID, created_at, updated_at ".
+                "FROM character_killmail_attackers ".
+                "LIMIT :start, :nb_rows";
+
+            return Helper::fetchOld($db, $start, $limit, $sql);
+        }
+
+        public static function insertNewKillAttacker(PDO $db, $row)
+        {
+            $sql = "INSERT IGNORE INTO kill_mail_attackers (killID, characterID, characterName, corporationID, ".
+                "corporationName, allianceID, allianceName, factionID, factionName, securityStatus, damageDone, ".
+                "finalBlow, weaponTypeID, shipTypeID, created_at, updated_at) ".
+                "VALUES (:kid, :cid, :cname, :crpid, :crpname, :aid, :aname, :fid, :fname, :ss, :dd, :fb, :wtid, ".
+                ":stid, :created, :updated)";
+
+            $q = $db->prepare($sql);
+            $q->bindParam(':kid', $row['killID']);
+            $q->bindParam(':cid', $row['characterID']);
+            $q->bindParam(':cname', $row['characterName']);
+            $q->bindParam(':crpid', $row['corporationID']);
+            $q->bindParam(':crpname', $row['corporationName']);
+            $q->bindParam(':aid', $row['allianceID']);
+            $q->bindParam(':aname', $row['allianceName']);
+            $q->bindParam(':fid', $row['factionID']);
+            $q->bindParam(':fname', $row['factionName']);
+            $q->bindParam(':ss', $row['securityStatus']);
+            $q->bindParam(':dd', $row['damageDone']);
+            $q->bindParam(':fb', $row['finalBlow']);
+            $q->bindParam(':wtid', $row['weaponTypeID']);
+            $q->bindParam(':stid', $row['shipTypeID']);
+            $q->bindParam(':created', $row['created_at']);
+            $q->bindParam(':updated', $row['updated_at']);
+            $result = $q->execute();
+            $q->closeCursor();
+
+            return $result;
+        }
+
+        public static function fetchOldKillDetail(PDO $db, $start, $limit)
+        {
+            $sql = "SELECT killID, solarSystemID, killTime, moonID, characterID, characterName, corporationID, ".
+                "corporationName, allianceID, allianceName, factionID, factionName, damageTaken, shipTypeID, created_at, ".
+                "updated_at FROM character_killmail_detail LIMIT :start, :nb_rows";
+
+            return Helper::fetchOld($db, $start, $limit, $sql);
+        }
+
+        public static function insertNewKillDetail(PDO $db, $row)
+        {
+            $sql = "INSERT IGNORE INTO kill_mail_details (killID, solarSystemID, killTime, moonID, characterID, ".
+                "characterName, corporationID, corporationName, allianceID, allianceName, factionID, factionName, ".
+                "damageTaken, shipTypeID, created_at, updated_at) VALUES (:kid, :sid, :kt, :mid, :cid, :cname, ".
+                ":crpid, :crpname, :aid, :aname, :fid, :fname, :dt, :stid, :created, :updated)";
+
+            $q = $db->prepare($sql);
+            $q->bindParam(':kid', $row['killID']);
+            $q->bindParam(':sid', $row['solarSystemID']);
+            $q->bindParam(':kt', $row['killTime']);
+            $q->bindParam(':mid', $row['moonID']);
+            $q->bindParam(':cid', $row['characterID']);
+            $q->bindParam(':cname', $row['characterName']);
+            $q->bindParam(':crpid', $row['corporationID']);
+            $q->bindParam(':crpname', $row['corporationName']);
+            $q->bindParam(':aid', $row['allianceID']);
+            $q->bindParam(':aname', $row['allianceName']);
+            $q->bindParam(':fid', $row['factionID']);
+            $q->bindParam(':fname', $row['factionName']);
+            $q->bindParam(':dt', $row['damageTaken']);
+            $q->bindParam(':stid', $row['shipTypeID']);
+            $q->bindParam(':created', $row['created_at']);
+            $q->bindParam(':updated', $row['updated_at']);
+            $result = $q->execute();
+            $q->closeCursor();
+
+            return $result;
+        }
+
+        public static function fetchOldKillItem(PDO $db, $start, $limit)
+        {
+            $sql = "SELECT killID, typeID, flag, qtyDropped, qtyDestroyed, singleton, created_at, ".
+                "updated_at FROM character_killmail_items LIMIT :start, :nb_rows";
+
+            return Helper::fetchOld($db, $start, $limit, $sql);
+        }
+
+        public static function insertNewKillItem(PDO $db, $row)
+        {
+            $sql = "INSERT IGNORE INTO kill_mail_items (killID, typeID, flag, qtyDropped, qtyDestroyed, singleton, ".
+                "created_at, updated_at) VALUES (:kid, :tid, :f, :qtdrp, :qtdst, :s, :created, :updated)";
+
+            $q = $db->prepare($sql);
+            $q->bindParam(':kid', $row['killID']);
+            $q->bindParam(':tid', $row['typeID']);
+            $q->bindParam(':f', $row['flag']);
+            $q->bindParam(':qtdrp', $row['qtyDropped']);
+            $q->bindParam(':qtdst', $row['qtyDestroyed']);
+            $q->bindParam(':s', $row['singleton']);
+            $q->bindParam(':created', $row['created_at']);
+            $q->bindParam(':updated', $row['updated_at']);
+            $result = $q->execute();
+            $q->closeCursor();
+
+            return $result;
+        }
+
         public static function fetchOldMailHeader(PDO $db, $start, $limit)
         {
             $sql = "SELECT id, characterID, messageID, senderID, senderName, sentDate, title, toCorpOrAllianceID, ".
@@ -1282,6 +1601,115 @@ namespace Seat\DistUpgrade {
             $q = $db->prepare($sql);
             $q->bindParam(':corporationID', $row['corporationID'], PDO::PARAM_INT);
             $q->bindParam(':killID', $row['killID'], PDO::PARAM_INT);
+            $q->bindParam(':created', $row['created_at']);
+            $q->bindParam(':updated', $row['updated_at']);
+            $result = $q->execute();
+            $q->closeCursor();
+
+            return $result;
+        }
+
+        public static function fetchOldKillAttacker(PDO $db, $start, $limit)
+        {
+            $sql = "SELECT killID, characterID, characterName, corporationID, corporationName, allianceID, ".
+                "allianceName, factionID, factionName, securityStatus, damageDone, finalBlow, weaponTypeID, ".
+                "shipTypeID, created_at, updated_at ".
+                "FROM corporation_killmail_attackers ".
+                "LIMIT :start, :nb_rows";
+
+            return Helper::fetchOld($db, $start, $limit, $sql);
+        }
+
+        public static function insertNewKillAttacker(PDO $db, $row)
+        {
+            $sql = "INSERT IGNORE INTO kill_mail_attackers (killID, characterID, characterName, corporationID, ".
+                "corporationName, allianceID, allianceName, factionID, factionName, securityStatus, damageDone, ".
+                "finalBlow, weaponTypeID, shipTypeID, created_at, updated_at) ".
+                "VALUES (:kid, :cid, :cname, :crpid, :crpname, :aid, :aname, :fid, :fname, :ss, :dd, :fb, :wtid, ".
+                ":stid, :created, :updated)";
+
+            $q = $db->prepare($sql);
+            $q->bindParam(':kid', $row['killID']);
+            $q->bindParam(':cid', $row['characterID']);
+            $q->bindParam(':cname', $row['characterName']);
+            $q->bindParam(':crpid', $row['corporationID']);
+            $q->bindParam(':crpname', $row['corporationName']);
+            $q->bindParam(':aid', $row['allianceID']);
+            $q->bindParam(':aname', $row['allianceName']);
+            $q->bindParam(':fid', $row['factionID']);
+            $q->bindParam(':fname', $row['factionName']);
+            $q->bindParam(':ss', $row['securityStatus']);
+            $q->bindParam(':dd', $row['damageDone']);
+            $q->bindParam(':fb', $row['finalBlow']);
+            $q->bindParam(':wtid', $row['weaponTypeID']);
+            $q->bindParam(':stid', $row['shipTypeID']);
+            $q->bindParam(':created', $row['created_at']);
+            $q->bindParam(':updated', $row['updated_at']);
+            $result = $q->execute();
+            $q->closeCursor();
+
+            return $result;
+        }
+
+        public static function fetchOldKillDetail(PDO $db, $start, $limit)
+        {
+            $sql = "SELECT killID, solarSystemID, killTime, moonID, characterID, characterName, corporationID, ".
+            "corporationName, allianceID, allianceName, factionID, factionName, damageTaken, shipTypeID, created_at, ".
+                "updated_at FROM corporation_killmail_detail LIMIT :start, :nb_rows";
+
+            return Helper::fetchOld($db, $start, $limit, $sql);
+        }
+
+        public static function insertNewKillDetail(PDO $db, $row)
+        {
+            $sql = "INSERT IGNORE INTO kill_mail_details (killID, solarSystemID, killTime, moonID, characterID, ".
+                "characterName, corporationID, corporationName, allianceID, allianceName, factionID, factionName, ".
+                "damageTaken, shipTypeID, created_at, updated_at) VALUES (:kid, :sid, :kt, :mid, :cid, :cname, ".
+                ":crpid, :crpname, :aid, :aname, :fid, :fname, :dt, :stid, :created, :updated)";
+
+            $q = $db->prepare($sql);
+            $q->bindParam(':kid', $row['killID']);
+            $q->bindParam(':sid', $row['solarSystemID']);
+            $q->bindParam(':kt', $row['killTime']);
+            $q->bindParam(':mid', $row['moonID']);
+            $q->bindParam(':cid', $row['characterID']);
+            $q->bindParam(':cname', $row['characterName']);
+            $q->bindParam(':crpid', $row['corporationID']);
+            $q->bindParam(':crpname', $row['corporationName']);
+            $q->bindParam(':aid', $row['allianceID']);
+            $q->bindParam(':aname', $row['allianceName']);
+            $q->bindParam(':fid', $row['factionID']);
+            $q->bindParam(':fname', $row['factionName']);
+            $q->bindParam(':dt', $row['damageTaken']);
+            $q->bindParam(':stid', $row['shipTypeID']);
+            $q->bindParam(':created', $row['created_at']);
+            $q->bindParam(':updated', $row['updated_at']);
+            $result = $q->execute();
+            $q->closeCursor();
+
+            return $result;
+        }
+
+        public static function fetchOldKillItem(PDO $db, $start, $limit)
+        {
+            $sql = "SELECT killID, typeID, flag, qtyDropped, qtyDestroyed, singleton, created_at, ".
+                "updated_at FROM corporation_killmail_items LIMIT :start, :nb_rows";
+
+            return Helper::fetchOld($db, $start, $limit, $sql);
+        }
+
+        public static function insertNewKillItem(PDO $db, $row)
+        {
+            $sql = "INSERT IGNORE INTO kill_mail_items (killID, typeID, flag, qtyDropped, qtyDestroyed, singleton, ".
+                "created_at, updated_at) VALUES (:kid, :tid, :f, :qtdrp, :qtdst, :s, :created, :updated)";
+
+            $q = $db->prepare($sql);
+            $q->bindParam(':kid', $row['killID']);
+            $q->bindParam(':tid', $row['typeID']);
+            $q->bindParam(':f', $row['flag']);
+            $q->bindParam(':qtdrp', $row['qtyDropped']);
+            $q->bindParam(':qtdst', $row['qtyDestroyed']);
+            $q->bindParam(':s', $row['singleton']);
             $q->bindParam(':created', $row['created_at']);
             $q->bindParam(':updated', $row['updated_at']);
             $result = $q->execute();
