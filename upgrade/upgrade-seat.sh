@@ -27,6 +27,8 @@ echo " * Running any database migrations"
 php artisan migrate
 echo " * Running the schedule seeder"
 php artisan db:seed --class=Seat\\Services\\database\\seeds\\ScheduleSeeder
+echo " * Asking queue workers to restart"
+php artisan queue:restart
 echo " * Taking SeAT out of maintenance mode"
 php artisan up
 echo " * Done"
