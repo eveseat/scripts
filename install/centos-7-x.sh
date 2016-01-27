@@ -157,7 +157,7 @@ echo " * Configuring Supervisor for 4 workers"
 echo
 cat >>/etc/supervisord.d/seat.ini <<EOL
 [program:seat]
-command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 10 --timeout=3600
+command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 1 --timeout=3600
 process_name = %(program_name)s-80%(process_num)02d
 stdout_logfile = /var/log/seat-80%(process_num)02d.log
 stdout_logfile_maxbytes=100MB
