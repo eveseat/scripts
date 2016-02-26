@@ -31,6 +31,9 @@ set -e
 # Work from roots home
 cd /root/
 
+# Update apt repos
+apt-get update
+
 # Make Ubuntu not ask any questions
 export DEBIAN_FRONTEND=noninteractive
 
