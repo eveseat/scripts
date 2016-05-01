@@ -236,4 +236,5 @@ apachectl -t -D DUMP_VHOSTS
 
 echo
 echo " ** Done. Remember to set the admin password with: php artisan seat:admin:reset"
+echo "    and the administrator email with php artisan seat:admin:email"
 echo

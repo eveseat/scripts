@@ -31,9 +31,6 @@ set -e
 # Work from roots home
 cd /root/
 
-# Update apt repos
-apt-get update
-
 # Make Ubuntu not ask any questions
 export DEBIAN_FRONTEND=noninteractive
 
@@ -195,4 +192,5 @@ apachectl -t -D DUMP_VHOSTS
 
 echo
 echo " ** Done. Remember to set the admin password with: php artisan seat:admin:reset"
+echo "    and the administrator email with php artisan seat:admin:email"
 echo
