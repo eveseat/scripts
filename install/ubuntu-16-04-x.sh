@@ -37,7 +37,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 echo " * Updating Package Repositories and Packages"
 apt update
-apt upgrade
+apt upgrade -y
 
 # Install MySQL. expect is installed to automate the mysql_secure_installation
 echo " * Installing MySQL Server"
