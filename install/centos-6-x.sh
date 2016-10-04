@@ -153,7 +153,8 @@ echo " * Configuring Supervisor for 4 workers"
 echo
 cat >>/etc/supervisord.conf <<EOL
 [program:seat1]
-command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 1 --timeout=3600
+;command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 1 --timeout=3600
+command=/usr/bin/php /var/www/seat/artisan queue:work --daemon --queue=high,medium,low,default --tries=3 --sleep=3
 directory=/var/www/seat
 stopwaitsecs=600
 user=apache
@@ -165,7 +166,8 @@ stderr_logfile_maxbytes=100MB
 stderr_logfile_backups=5
 
 [program:seat2]
-command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 1 --timeout=3600
+;command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 1 --timeout=3600
+command=/usr/bin/php /var/www/seat/artisan queue:work --daemon --queue=high,medium,low,default --tries=3 --sleep=3
 directory=/var/www/seat
 stopwaitsecs=600
 user=apache
@@ -177,7 +179,8 @@ stderr_logfile_maxbytes=100MB
 stderr_logfile_backups=5
 
 [program:seat3]
-command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 1 --timeout=3600
+;command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 1 --timeout=3600
+command=/usr/bin/php /var/www/seat/artisan queue:work --daemon --queue=high,medium,low,default --tries=3 --sleep=3
 directory=/var/www/seat
 stopwaitsecs=600
 user=apache
@@ -189,7 +192,8 @@ stderr_logfile_maxbytes=100MB
 stderr_logfile_backups=5
 
 [program:seat4]
-command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 1 --timeout=3600
+;command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 1 --timeout=3600
+command=/usr/bin/php /var/www/seat/artisan queue:work --daemon --queue=high,medium,low,default --tries=3 --sleep=3
 directory=/var/www/seat
 stopwaitsecs=600
 user=apache
