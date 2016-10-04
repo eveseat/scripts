@@ -20,17 +20,6 @@ if [ $EUID != 0 ]; then
     exit 1
 fi
 
-read -p "Where do you want install SeAT ? " seatpath
-
-if [ -d "$seatpath" ]; then
-	echo "The specified SeAT installation path '$seatpath' does already exist."
-	echo "SeAT Auto Installer will now exit."
-	exit 1
-else
-	echo "The SeAT Auto Installer will now install SeAT to this location '$seatpath'"
-	mkdir $seatpath
-fi
-
 # Generate some data that we need to work with
 MYSQL_ROOT_PASS=$(echo -e `date` | md5sum | awk '{ print $1 }');
 sleep 1
@@ -87,7 +76,12 @@ echo
 
 echo " * Setting up PHP & Apache"
 echo
-add-apt-repository ppa:ondrej/php5-5.6 -y
+if ! command -v php || ! php -r 'echo (version_compare(phpversion(), "5.6") >= 0);'
+then
+    sudo apt-get install software-properties-common -y
+    add-apt-repository ppa:ondrej/php5-5.6 -y
+fi
+
 apt-get update
 apt-get install apache2 php5 php5-cli php5-mcrypt php5-intl php5-mysql php5-curl php5-gd -y
 
@@ -102,22 +96,22 @@ apt-get install git -y
 
 echo " * Getting SeAT Setup"
 echo
-cd $seatpath
-composer create-project eveseat/seat $seatpath --keep-vcs --prefer-source --no-dev
+cd /var/www
+composer create-project eveseat/seat seat --keep-vcs --no-dev
 
 echo " * Configuring Permissions"
 echo
-chown -R www-data:www-data $seatpath
-chmod -R guo+w $seatpath/storage/
+chown -R www-data:www-data /var/www/seat
+chmod -R guo+w /var/www/seat/storage/
 
 echo " * Configuring SeAT itself"
 echo
-cd $seatpath
-sed -i -r "s/DB_DATABASE=homestead/DB_DATABASE=seat/" $seatpath/.env
-sed -i -r "s/DB_USERNAME=homestead/DB_USERNAME=seat/" $seatpath/.env
-sed -i -r "s/DB_PASSWORD=secret/DB_PASSWORD=$SEAT_DB_PASS/" $seatpath/.env
-sed -i -r "s/CACHE_DRIVER=file/CACHE_DRIVER=redis/" $seatpath/.env
-sed -i -r "s/QUEUE_DRIVER=sync/QUEUE_DRIVER=redis/" $seatpath/.env
+cd /var/www/seat
+sed -i -r "s/DB_DATABASE=homestead/DB_DATABASE=seat/" /var/www/seat/.env
+sed -i -r "s/DB_USERNAME=homestead/DB_USERNAME=seat/" /var/www/seat/.env
+sed -i -r "s/DB_PASSWORD=secret/DB_PASSWORD=$SEAT_DB_PASS/" /var/www/seat/.env
+sed -i -r "s/CACHE_DRIVER=file/CACHE_DRIVER=redis/" /var/www/seat/.env
+sed -i -r "s/QUEUE_DRIVER=sync/QUEUE_DRIVER=redis/" /var/www/seat/.env
 
 # Run artisan commands
 php artisan vendor:publish
@@ -134,13 +128,13 @@ echo " * Configuring Supervisor for 4 workers"
 echo
 cat >>/etc/supervisor/conf.d/seat.conf <<EOL
 [program:seat]
-command=/usr/bin/php $seatpath/artisan queue:listen --queue=high,medium,low,default --tries 10 --timeout=3600
+command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 1 --timeout=3600
 process_name = %(program_name)s-80%(process_num)02d
 stdout_logfile = /var/log/seat-80%(process_num)02d.log
 stdout_logfile_maxbytes=100MB
 stdout_logfile_backups=10
 numprocs=4
-directory=$seatpath
+directory=/var/www/seat
 stopwaitsecs=600
 user=www-data
 EOL
@@ -154,14 +148,14 @@ TMP_TAB=$(mktemp)
 set +e  # Temporarily stop the errexit option for the crontab listing
 crontab -u www-data -l > ${TMP_TAB}
 set -e  # Restore errexit
-echo "* * * * * /usr/bin/php $seatpath/artisan schedule:run 1>> /dev/null 2>&1" >> ${TMP_TAB}
+echo "* * * * * /usr/bin/php /var/www/seat/artisan schedule:run 1>> /dev/null 2>&1" >> ${TMP_TAB}
 crontab -u www-data ${TMP_TAB}
 rm ${TMP_TAB}
 
 echo " * Setting Up Apache Virtual Host"
 echo
 echo " * Disabling default page"
-a2dissite 000-default
+unlink /etc/apache2/sites-enabled/000-default.conf
 
 echo " * Hardening Apache"
 echo " * Disabling directory Indexing"
@@ -170,15 +164,15 @@ echo " * Removing Server signature & Tokens"
 sed -i -r "s/ServerTokens OS/ServerTokens Prod/" /etc/apache2/conf-enabled/security.conf
 sed -i -r "s/ServerSignature On/ServerSignature Off/" /etc/apache2/conf-enabled/security.conf
 
-cat >>/etc/apache2/sites-available/seat.local.conf <<EOL
+cat >>/etc/apache2/sites-available/100-seat.local.conf <<EOL
 <VirtualHost *:80>
     ServerAdmin webmaster@your.domain
-    DocumentRoot "$seatpath/public"
+    DocumentRoot "/var/www/html/seat.local"
     ServerName seat.local
     ServerAlias www.seat.local
     ErrorLog /var/log/apache2/seat.local-error.log
     CustomLog /var/log/apache2/seat.local-access.log combined
-    <Directory "$seatpath/public">
+    <Directory "/var/www/html/seat.local">
         AllowOverride All
         Order allow,deny
         Allow from all
@@ -187,7 +181,8 @@ cat >>/etc/apache2/sites-available/seat.local.conf <<EOL
 EOL
 
 echo " * Linking new vhost to be enabled"
-a2ensite seat.local
+ln -s /var/www/seat/public /var/www/html/seat.local
+ln -s /etc/apache2/sites-available/100-seat.local.conf /etc/apache2/sites-enabled/
 
 echo " * Enabling mod_rewrite"
 sudo a2enmod rewrite
@@ -197,4 +192,5 @@ apachectl -t -D DUMP_VHOSTS
 
 echo
 echo " ** Done. Remember to set the admin password with: php artisan seat:admin:reset"
+echo "    and the administrator email with php artisan seat:admin:email"
 echo
