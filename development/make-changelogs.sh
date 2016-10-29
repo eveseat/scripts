@@ -78,22 +78,22 @@ cd $CURRENT_DIRECTORY
 
 echo " + Writing Changelogs"
 cd $CHANGELOGS_DIR
-echo "$MAIN_SEAT_CHANGELOG" > seat.md
-echo "$API_CHANGELOG" > api.md
-echo "$CONSOLE_CHANGELOG" > console.md
-echo "$EVEAPI_CHANGELOG" > eveapi.md
-echo "$NOTIFICATIONS_CHANGELOG" > notifications.md
-echo "$SERVICES_CHANGELOG" > services.md
-echo "$WEB_CHANGELOG" > web.md
+echo "$MAIN_SEAT_CHANGELOG" > seat.txt
+echo "$API_CHANGELOG" > api.txt
+echo "$CONSOLE_CHANGELOG" > console.txt
+echo "$EVEAPI_CHANGELOG" > eveapi.txt
+echo "$NOTIFICATIONS_CHANGELOG" > notifications.txt
+echo "$SERVICES_CHANGELOG" > services.txt
+echo "$WEB_CHANGELOG" > web.txt
 
 echo " + Writing Combined Changelog"
-echo "$MAIN_SEAT_CHANGELOG" > all.md
-echo "$API_CHANGELOG" >> all.md
-echo "$CONSOLE_CHANGELOG" >> all.md
-echo "$EVEAPI_CHANGELOG" >> all.md
-echo "$NOTIFICATIONS_CHANGELOG" >> all.md
-echo "$SERVICES_CHANGELOG" >> all.md
-echo "$WEB_CHANGELOG" >> all.md
+echo "$MAIN_SEAT_CHANGELOG" > all.txt
+echo "$API_CHANGELOG" >> all.txt
+echo "$CONSOLE_CHANGELOG" >> all.txt
+echo "$EVEAPI_CHANGELOG" >> all.txt
+echo "$NOTIFICATIONS_CHANGELOG" >> all.txt
+echo "$SERVICES_CHANGELOG" >> all.txt
+echo "$WEB_CHANGELOG" >> all.txt
 cd $CURRENT_DIRECTORY
 
 echo " + Done"
