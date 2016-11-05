@@ -25,6 +25,7 @@ namespace Seat\Migrate {
 
     class Script
     {
+
         /**
          * @var int
          */
@@ -40,6 +41,7 @@ namespace Seat\Migrate {
 
         public static function main($old_host, $old_port, $old_name, $old_user, $old_pass, $new_host, $new_port, $new_name, $new_user, $new_pass)
         {
+
             echo "\033[0;97m Checking Database Connection...\033[0m\n";
             try {
                 echo "\033[0;34m Trying to connect to the OLD SeAT database... \033[0m";
@@ -47,6 +49,7 @@ namespace Seat\Migrate {
                 echo "\033[0;32m [SUCCESS]\033[0m\n";
             } catch (\PDOException $e) {
                 echo "\033[0;31m [FAILED]\033[0m\n";
+
                 return 1;
             }
 
@@ -56,6 +59,7 @@ namespace Seat\Migrate {
                 echo "\033[0;32m [SUCCESS]\033[0m\n";
             } catch (\PDOException $e) {
                 echo "\033[0;31m [FAILED]\033[0m\n";
+
                 return 1;
             }
 
@@ -81,8 +85,18 @@ namespace Seat\Migrate {
 
         // Wallet migration
 
+        private static function initMigratingTable()
+        {
+
+            $sql_create = "CREATE TABLE IF NOT EXISTS dist_upgrade(`table` VARCHAR(255) PRIMARY KEY, `migrated` TINYINT(1))";
+
+            $q = self::$_newDatabase->prepare($sql_create);
+            $q->execute();
+        }
+
         private static function upgradeWalletData()
         {
+
             // Market Orders Upgrade
             echo "\033[0;34m migrating character_marketorders to character_market_orders...\033[0m        ";
             if (self::upgradeCharacterMarketOrders()) {
@@ -131,6 +145,7 @@ namespace Seat\Migrate {
 
         private static function upgradeCharacterMarketOrders()
         {
+
             self::initMigratingFlag("character_marketorders");
             if (self::statusMigratingFlag("character_marketorders")) {
                 return true;
@@ -154,11 +169,52 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("character_marketorders");
+
             return true;
+        }
+
+        private static function initMigratingFlag($table_name)
+        {
+
+            $q = self::$_newDatabase->prepare("INSERT IGNORE INTO `dist_upgrade` (`table`, `migrated`) VALUES (:tbl_name, :flag)");
+            $q->bindParam(":tbl_name", $table_name, PDO::PARAM_STR);
+            $q->bindValue(":flag", 0);
+            $q->execute();
+            $q->closeCursor();
+        }
+
+        private static function statusMigratingFlag($table_name)
+        {
+
+            $q = self::$_newDatabase->prepare("SELECT * FROM `dist_upgrade` WHERE `table` = :tbl_name AND `migrated` = :flag");
+            $q->bindValue(":flag", 1, PDO::PARAM_INT);
+            $q->bindParam(":tbl_name", $table_name, PDO::PARAM_STR);
+            $q->execute();
+
+            if ($q->rowCount()) {
+                $q->closeCursor();
+
+                return true;
+            } else {
+                $q->closeCursor();
+
+                return false;
+            }
+        }
+
+        private static function updateMigratingFlag($table_name)
+        {
+
+            $q = self::$_newDatabase->prepare("UPDATE `dist_upgrade` SET `migrated` = :flag WHERE `table` = :tbl_name");
+            $q->bindValue(":flag", 1, PDO::PARAM_INT);
+            $q->bindParam(":tbl_name", $table_name, PDO::PARAM_STR);
+            $q->execute();
+            $q->closeCursor();
         }
 
         private static function upgradeCorporationMarketOrders()
         {
+
             self::initMigratingFlag("corporation_marketorders");
             if (self::statusMigratingFlag("corporation_marketorders")) {
                 return true;
@@ -182,11 +238,15 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("corporation_marketorders");
+
             return true;
         }
 
+        // Message migration
+
         private static function upgradeCharacterJournal()
         {
+
             self::initMigratingFlag("character_walletjournal");
             if (self::statusMigratingFlag("character_walletjournal")) {
                 return true;
@@ -210,11 +270,13 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("character_walletjournal");
+
             return true;
         }
 
         private static function upgradeCorporationJournal()
         {
+
             self::initMigratingFlag("corporation_walletjournal");
             if (self::statusMigratingFlag("corporation_walletjournal")) {
                 return true;
@@ -238,11 +300,13 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("corporation_walletjournal");
+
             return true;
         }
 
         private static function upgradeCharacterTransaction()
         {
+
             self::initMigratingFlag("character_wallettransactions");
             if (self::statusMigratingFlag("character_wallettransactions")) {
                 return true;
@@ -266,11 +330,13 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("character_wallettransactions");
+
             return true;
         }
 
         private static function upgradeCorporationTransaction()
         {
+
             self::initMigratingFlag("corporation_wallettransactions");
             if (self::statusMigratingFlag("corporation_wallettransactions")) {
                 return true;
@@ -294,13 +360,13 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("corporation_wallettransactions");
+
             return true;
         }
 
-        // Message migration
-
         private static function upgradeMessageData()
         {
+
             // Kills Upgrade
             echo "\033[0;34m migrating character_killmails to character_kill_mails...\033[0m        ";
             if (self::upgradeCharacterKill()) {
@@ -404,6 +470,7 @@ namespace Seat\Migrate {
 
         private static function upgradeCharacterKill()
         {
+
             self::initMigratingFlag("character_killmails");
             if (self::statusMigratingFlag("character_killmails")) {
                 return true;
@@ -427,11 +494,13 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("character_killmails");
+
             return true;
         }
 
         private static function upgradeCharacterKillItem()
         {
+
             self::initMigratingFlag("character_killmail_items");
             if (self::statusMigratingFlag("character_killmail_items")) {
                 return true;
@@ -455,39 +524,13 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("character_killmail_items");
-            return true;
-        }
 
-        private static function upgradeCharacterKillAttacker()
-        {
-            self::initMigratingFlag("character_killmail_attackers");
-            if (self::statusMigratingFlag("character_killmail_attackers")) {
-                return true;
-            }
-
-            $q = self::$_oldDatabase->prepare("SELECT COUNT(*) AS nb_rows FROM character_killmail_attackers");
-            $q->execute();
-            $nb_rows = $q->fetch(PDO::FETCH_ASSOC)['nb_rows'];
-            $q->closeCursor();
-
-            $migrated_line = 0;
-            for ($curr_row = 0; $curr_row <= $nb_rows; $curr_row += self::$_maxRows) {
-                $rows = CharacterUpgrade::fetchOldKillAttacker(self::$_oldDatabase, $curr_row, self::$_maxRows);
-                foreach ($rows as $row) {
-                    if (CharacterUpgrade::insertNewKillAttacker(self::$_newDatabase, $row)) {
-                        Helper::displayProgress(++$migrated_line, $nb_rows);
-                    } else {
-                        return false;
-                    }
-                }
-            }
-
-            self::updateMigratingFlag("character_killmail_attackers");
             return true;
         }
 
         private static function upgradeCharacterKillDetail()
         {
+
             self::initMigratingFlag("character_killmail_detail");
             if (self::statusMigratingFlag("character_killmail_detail")) {
                 return true;
@@ -511,11 +554,43 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("character_killmail_detail");
+
+            return true;
+        }
+
+        private static function upgradeCharacterKillAttacker()
+        {
+
+            self::initMigratingFlag("character_killmail_attackers");
+            if (self::statusMigratingFlag("character_killmail_attackers")) {
+                return true;
+            }
+
+            $q = self::$_oldDatabase->prepare("SELECT COUNT(*) AS nb_rows FROM character_killmail_attackers");
+            $q->execute();
+            $nb_rows = $q->fetch(PDO::FETCH_ASSOC)['nb_rows'];
+            $q->closeCursor();
+
+            $migrated_line = 0;
+            for ($curr_row = 0; $curr_row <= $nb_rows; $curr_row += self::$_maxRows) {
+                $rows = CharacterUpgrade::fetchOldKillAttacker(self::$_oldDatabase, $curr_row, self::$_maxRows);
+                foreach ($rows as $row) {
+                    if (CharacterUpgrade::insertNewKillAttacker(self::$_newDatabase, $row)) {
+                        Helper::displayProgress(++$migrated_line, $nb_rows);
+                    } else {
+                        return false;
+                    }
+                }
+            }
+
+            self::updateMigratingFlag("character_killmail_attackers");
+
             return true;
         }
 
         private static function upgradeCorporationKill()
         {
+
             self::initMigratingFlag("corporation_killmails");
             if (self::statusMigratingFlag("corporation_killmails")) {
                 return true;
@@ -539,11 +614,13 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("corporation_killmails");
+
             return true;
         }
 
         private static function upgradeCorporationKillItem()
         {
+
             self::initMigratingFlag("corporation_killmail_items");
             if (self::statusMigratingFlag("corporation_killmail_items")) {
                 return true;
@@ -567,39 +644,13 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("corporation_killmail_items");
-            return true;
-        }
 
-        private static function upgradeCorporationKillAttacker()
-        {
-            self::initMigratingFlag("corporation_killmail_attackers");
-            if (self::statusMigratingFlag("corporation_killmail_attackers")) {
-                return true;
-            }
-
-            $q = self::$_oldDatabase->prepare("SELECT COUNT(*) AS nb_rows FROM corporation_killmail_attackers");
-            $q->execute();
-            $nb_rows = $q->fetch(PDO::FETCH_ASSOC)['nb_rows'];
-            $q->closeCursor();
-
-            $migrated_line = 0;
-            for ($curr_row = 0; $curr_row <= $nb_rows; $curr_row += self::$_maxRows) {
-                $rows = CharacterUpgrade::fetchOldKillAttacker(self::$_oldDatabase, $curr_row, self::$_maxRows);
-                foreach ($rows as $row) {
-                    if (CharacterUpgrade::insertNewKillAttacker(self::$_newDatabase, $row)) {
-                        Helper::displayProgress(++$migrated_line, $nb_rows);
-                    } else {
-                        return false;
-                    }
-                }
-            }
-
-            self::updateMigratingFlag("corporation_killmail_attackers");
             return true;
         }
 
         private static function upgradeCorporationKillDetail()
         {
+
             self::initMigratingFlag("corporation_killmail_detail");
             if (self::statusMigratingFlag("corporation_killmail_detail")) {
                 return true;
@@ -623,11 +674,43 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("corporation_killmail_detail");
+
+            return true;
+        }
+
+        private static function upgradeCorporationKillAttacker()
+        {
+
+            self::initMigratingFlag("corporation_killmail_attackers");
+            if (self::statusMigratingFlag("corporation_killmail_attackers")) {
+                return true;
+            }
+
+            $q = self::$_oldDatabase->prepare("SELECT COUNT(*) AS nb_rows FROM corporation_killmail_attackers");
+            $q->execute();
+            $nb_rows = $q->fetch(PDO::FETCH_ASSOC)['nb_rows'];
+            $q->closeCursor();
+
+            $migrated_line = 0;
+            for ($curr_row = 0; $curr_row <= $nb_rows; $curr_row += self::$_maxRows) {
+                $rows = CharacterUpgrade::fetchOldKillAttacker(self::$_oldDatabase, $curr_row, self::$_maxRows);
+                foreach ($rows as $row) {
+                    if (CharacterUpgrade::insertNewKillAttacker(self::$_newDatabase, $row)) {
+                        Helper::displayProgress(++$migrated_line, $nb_rows);
+                    } else {
+                        return false;
+                    }
+                }
+            }
+
+            self::updateMigratingFlag("corporation_killmail_attackers");
+
             return true;
         }
 
         private static function upgradeCharacterMessageHeader()
         {
+
             self::initMigratingFlag("character_mailmessages");
             if (self::statusMigratingFlag("character_mailmessages")) {
                 return true;
@@ -651,11 +734,13 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("character_mailmessages");
+
             return true;
         }
 
         private static function upgradeCharacterMessageBody()
         {
+
             self::initMigratingFlag("character_mailbodies");
             if (self::statusMigratingFlag("character_mailbodies")) {
                 return true;
@@ -679,11 +764,15 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("character_mailbodies");
+
             return true;
         }
 
+        // User migration
+
         private static function upgradeCharacterMailingList()
         {
+
             self::initMigratingFlag("character_mailinglists");
             if (self::statusMigratingFlag("character_mailinglists")) {
                 return true;
@@ -707,11 +796,13 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("character_mailinglists");
+
             return true;
         }
 
         private static function upgradeCharacterMailingInfo()
         {
+
             self::initMigratingFlag("character_mailinglists2");
             if (self::statusMigratingFlag("character_mailinglists2")) {
                 return true;
@@ -735,11 +826,13 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("character_mailinglists2");
+
             return true;
         }
 
         private static function upgradeCharacterNotification()
         {
+
             self::initMigratingFlag("character_notifications");
             if (self::statusMigratingFlag("character_notifications")) {
                 return true;
@@ -763,11 +856,15 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("character_notifications");
+
             return true;
         }
 
+        // Upgrade script tools
+
         private static function upgradeCharacterNotificationContent()
         {
+
             self::initMigratingFlag("character_notification_texts");
             if (self::statusMigratingFlag("character_notification_texts")) {
                 return true;
@@ -791,16 +888,16 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("character_notification_texts");
+
             return true;
         }
 
-        // User migration
-
         private static function upgradeUserData()
         {
+
             // User Upgrade
             echo "\033[0;34m migrating seat_users to users...\033[0m        ";
-            if (self::upgradeUser()){
+            if (self::upgradeUser()) {
                 echo "\033[0;32m [SUCCESS]\033[0m\n";
             } else {
                 echo "\033[0;31m [FAILED]\033[0m\n";
@@ -808,7 +905,7 @@ namespace Seat\Migrate {
 
             // Api Key Upgrade
             echo "\033[0;34m migrating seat_keys to eve_api_keys...\033[0m        ";
-            if (self::upgradeKey()){
+            if (self::upgradeKey()) {
                 echo "\033[0;32m [SUCCESS]\033[0m\n";
             } else {
                 echo "\033[0;31m [FAILED]\033[0m\n";
@@ -817,6 +914,7 @@ namespace Seat\Migrate {
 
         private static function upgradeUser()
         {
+
             self::initMigratingFlag("seat_users");
             if (self::statusMigratingFlag("seat_users")) {
                 return true;
@@ -840,11 +938,13 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("seat_users");
+
             return true;
         }
 
         private static function upgradeKey()
         {
+
             self::initMigratingFlag("seat_keys");
             if (self::statusMigratingFlag("seat_keys")) {
                 return true;
@@ -868,59 +968,18 @@ namespace Seat\Migrate {
             }
 
             self::updateMigratingFlag("seat_keys");
+
             return true;
-        }
-
-        // Upgrade script tools
-
-        private static function initMigratingTable()
-        {
-            $sql_create = "CREATE TABLE IF NOT EXISTS dist_upgrade(`table` VARCHAR(255) PRIMARY KEY, `migrated` TINYINT(1))";
-
-            $q = self::$_newDatabase->prepare($sql_create);
-            $q->execute();
-        }
-
-        private static function initMigratingFlag($table_name)
-        {
-            $q = self::$_newDatabase->prepare("INSERT IGNORE INTO `dist_upgrade` (`table`, `migrated`) VALUES (:tbl_name, :flag)");
-            $q->bindParam(":tbl_name", $table_name, PDO::PARAM_STR);
-            $q->bindValue(":flag", 0);
-            $q->execute();
-            $q->closeCursor();
-        }
-
-        private static function updateMigratingFlag($table_name)
-        {
-            $q = self::$_newDatabase->prepare("UPDATE `dist_upgrade` SET `migrated` = :flag WHERE `table` = :tbl_name");
-            $q->bindValue(":flag", 1, PDO::PARAM_INT);
-            $q->bindParam(":tbl_name", $table_name, PDO::PARAM_STR);
-            $q->execute();
-            $q->closeCursor();
-        }
-
-        private static function statusMigratingFlag($table_name)
-        {
-            $q = self::$_newDatabase->prepare("SELECT * FROM `dist_upgrade` WHERE `table` = :tbl_name AND `migrated` = :flag");
-            $q->bindValue(":flag", 1, PDO::PARAM_INT);
-            $q->bindParam(":tbl_name", $table_name, PDO::PARAM_STR);
-            $q->execute();
-
-            if ($q->rowCount()) {
-                $q->closeCursor();
-                return true;
-            } else {
-                $q->closeCursor();
-                return false;
-            }
         }
     }
 
     class Helper
     {
+
         public static function fetchOld(PDO $db, $start, $limit, $sql)
         {
-            $result = array();
+
+            $result = [];
             $q = $db->prepare($sql);
             $q->bindParam(':start', $start, PDO::PARAM_INT);
             $q->bindValue(':nb_rows', $limit, PDO::PARAM_INT);
@@ -937,7 +996,8 @@ namespace Seat\Migrate {
 
         public static function displayProgress($accomplished, $total)
         {
-            $percent = round((float) $accomplished / (float) $total, 2)*100;
+
+            $percent = round((float)$accomplished / (float)$total, 2) * 100;
             echo "\033[7D\033[K"; // removing seven previous characters
             echo str_pad($percent, 5, ' ', STR_PAD_LEFT) . " %"; // insert the new value
         }
@@ -945,9 +1005,11 @@ namespace Seat\Migrate {
 
     class SeatUpgrade
     {
+
         public static function fetchOldUser(PDO $db, $start, $limit)
         {
-            $sql = "SELECT id, username, email, `password`, activated, last_login, last_login_source, remember_token, ".
+
+            $sql = "SELECT id, username, email, `password`, activated, last_login, last_login_source, remember_token, " .
                 "created_at, updated_at FROM seat_users WHERE id <> 1 LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
@@ -955,8 +1017,9 @@ namespace Seat\Migrate {
 
         public static function insertNewUser(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO users (id, `name`, email, `password`, active, last_login, last_login_source, ".
-                "remember_token, created_at, updated_at) ".
+
+            $sql = "INSERT IGNORE INTO users (id, `name`, email, `password`, active, last_login, last_login_source, " .
+                "remember_token, created_at, updated_at) " .
                 "VALUES (:id, :name, :mail, :password, :active, :lastdt, :source, :token, :created, :updated)";
 
             $q = $db->prepare($sql);
@@ -978,15 +1041,17 @@ namespace Seat\Migrate {
 
         public static function fetchOldKey(PDO $db, $start, $limit)
         {
-            $sql = "SELECT user_id, keyID, vCode, created_at, updated_at ".
-                    "FROM seat_keys LIMIT :start, :nb_rows";
+
+            $sql = "SELECT user_id, keyID, vCode, created_at, updated_at " .
+                "FROM seat_keys LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewKey(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO eve_api_keys (key_id, v_code, user_id, created_at, updated_at) ".
+
+            $sql = "INSERT IGNORE INTO eve_api_keys (key_id, v_code, user_id, created_at, updated_at) " .
                 "VALUES (:keyid, :vcode, :userid, :created, :updated)";
 
             $q = $db->prepare($sql);
@@ -1004,19 +1069,22 @@ namespace Seat\Migrate {
 
     class CharacterUpgrade
     {
+
         public static function fetchOldMarketOrder(PDO $db, $start, $limit)
         {
+
             $sql = "SELECT `id`, `orderID`, `charID`, `stationID`, `volEntered`, `volRemaining`, `minVolume`, " .
-                   "`orderState`, `typeID`, `range`, `duration`, `escrow`, `price`, `bid`, `issued`, `created_at`, " .
-                   "`updated_at` " .
-                   "FROM character_marketorders " .
-                   "LIMIT :start, :nb_rows";
+                "`orderState`, `typeID`, `range`, `duration`, `escrow`, `price`, `bid`, `issued`, `created_at`, " .
+                "`updated_at` " .
+                "FROM character_marketorders " .
+                "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewMarketOrder(PDO $db, $row)
         {
+
             $sql = "INSERT IGNORE INTO character_market_orders (`id`, `orderID`, `charID`, `stationID`, " .
                 "`volEntered`, `volRemaining`, `minVolume`, `orderState`, `typeID`, `range`, `accountKey`, `duration`, " .
                 "`escrow`, `price`, `bid`, `issued`, `created_at`, `updated_at`) " .
@@ -1052,24 +1120,26 @@ namespace Seat\Migrate {
 
         public static function fetchOldJournal(PDO $db, $start, $limit)
         {
-            $sql = "SELECT `hash`, `characterID`, `refID`, `date`, `refTypeID`, `ownerName1`, `ownerID1`, ".
-                   "`ownerName2`, `ownerID2`, `argName1`, `argID1`, `amount`, `balance`, `reason`, ".
-                   "`taxReceiverID`, `taxAmount`, `owner1TypeID`, `owner2TypeID`, `created_at`, `updated_at` ".
-                   "FROM character_walletjournal ".
-                   "LIMIT :start, :nb_rows";
+
+            $sql = "SELECT `hash`, `characterID`, `refID`, `date`, `refTypeID`, `ownerName1`, `ownerID1`, " .
+                "`ownerName2`, `ownerID2`, `argName1`, `argID1`, `amount`, `balance`, `reason`, " .
+                "`taxReceiverID`, `taxAmount`, `owner1TypeID`, `owner2TypeID`, `created_at`, `updated_at` " .
+                "FROM character_walletjournal " .
+                "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewJournal(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO character_wallet_journals (`hash`, `characterID`, `refID`, `date`, ".
-                   "`refTypeID`, `ownerName1`, `ownerID1`, `ownerName2`, `ownerID2`, `argName1`, `argID1`, ".
-                   "`amount`, `balance`, `reason`, `taxReceiverID`, `taxAmount`, `owner1TypeID`, ".
-                   "`owner2TypeID`, `created_at`, `updated_at`) VALUES (:hash, :characterID, :refID, :date, ".
-                   ":refTypeID, :ownerName1, :ownerID1, :ownerName2, :ownerID2, :argName1, :argID1, :amount, ".
-                   ":balance, :reason, :taxReceiverID, :taxAmount, :owner1TypeID, :owner2TypeID, :created, ".
-                   ":updated)";
+
+            $sql = "INSERT IGNORE INTO character_wallet_journals (`hash`, `characterID`, `refID`, `date`, " .
+                "`refTypeID`, `ownerName1`, `ownerID1`, `ownerName2`, `ownerID2`, `argName1`, `argID1`, " .
+                "`amount`, `balance`, `reason`, `taxReceiverID`, `taxAmount`, `owner1TypeID`, " .
+                "`owner2TypeID`, `created_at`, `updated_at`) VALUES (:hash, :characterID, :refID, :date, " .
+                ":refTypeID, :ownerName1, :ownerID1, :ownerName2, :ownerID2, :argName1, :argID1, :amount, " .
+                ":balance, :reason, :taxReceiverID, :taxAmount, :owner1TypeID, :owner2TypeID, :created, " .
+                ":updated)";
 
             $q = $db->prepare($sql);
 
@@ -1101,9 +1171,10 @@ namespace Seat\Migrate {
 
         public static function fetchOldTransaction(PDO $db, $start, $limit)
         {
-            $sql = "SELECT `hash`, `characterID`, `transactionID`, `transactionDateTime`, `quantity`, ".
-                "`typeName`, `typeID`, `price`, `clientID`, `clientName`, `stationID`, `stationName`, ".
-                "`transactionType`, `transactionFor`, `journalTransactionID`, `clientTypeID`, ".
+
+            $sql = "SELECT `hash`, `characterID`, `transactionID`, `transactionDateTime`, `quantity`, " .
+                "`typeName`, `typeID`, `price`, `clientID`, `clientName`, `stationID`, `stationName`, " .
+                "`transactionType`, `transactionFor`, `journalTransactionID`, `clientTypeID`, " .
                 "`created_at`, `updated_at` FROM character_wallettransactions LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
@@ -1111,12 +1182,13 @@ namespace Seat\Migrate {
 
         public static function insertNewTransaction(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO character_wallet_transactions (hash, characterID, transactionID, ".
-                "transactionDateTime, quantity, typeName, typeID, price, clientID, clientName, ".
-                "stationID, stationName, transactionType, transactionFor, journalTransactionID, ".
-                "clientTypeID, created_at, updated_at) VALUES (:hash, :characterID, :transactionID, ".
-                ":transactionDateTime, :quantity, :typeName, :typeID, :price, :clientID, :clientName, ".
-                ":stationID, :stationName, :transactionType, :transactionFor, :journalTransactionID, ".
+
+            $sql = "INSERT IGNORE INTO character_wallet_transactions (hash, characterID, transactionID, " .
+                "transactionDateTime, quantity, typeName, typeID, price, clientID, clientName, " .
+                "stationID, stationName, transactionType, transactionFor, journalTransactionID, " .
+                "clientTypeID, created_at, updated_at) VALUES (:hash, :characterID, :transactionID, " .
+                ":transactionDateTime, :quantity, :typeName, :typeID, :price, :clientID, :clientName, " .
+                ":stationID, :stationName, :transactionType, :transactionFor, :journalTransactionID, " .
                 ":clientTypeID, :created, :updated)";
 
             $q = $db->prepare($sql);
@@ -1146,17 +1218,19 @@ namespace Seat\Migrate {
 
         public static function fetchOldKill(PDO $db, $start, $limit)
         {
-            $sql = "SELECT characterID, killID, created_at, updated_at ".
-                   "FROM character_killmails ".
-                   "LIMIT :start, :nb_rows";
+
+            $sql = "SELECT characterID, killID, created_at, updated_at " .
+                "FROM character_killmails " .
+                "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewKill(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO character_kill_mails (characterID, killID, created_at, updated_at) ".
-                   " VALUES (:characterID, :killID, :created, :updated)";
+
+            $sql = "INSERT IGNORE INTO character_kill_mails (characterID, killID, created_at, updated_at) " .
+                " VALUES (:characterID, :killID, :created, :updated)";
 
             $q = $db->prepare($sql);
             $q->bindParam(':characterID', $row['characterID'], PDO::PARAM_INT);
@@ -1171,10 +1245,11 @@ namespace Seat\Migrate {
 
         public static function fetchOldKillAttacker(PDO $db, $start, $limit)
         {
-            $sql = "SELECT killID, characterID, characterName, corporationID, corporationName, allianceID, ".
-                "allianceName, factionID, factionName, securityStatus, damageDone, finalBlow, weaponTypeID, ".
-                "shipTypeID, created_at, updated_at ".
-                "FROM character_killmail_attackers ".
+
+            $sql = "SELECT killID, characterID, characterName, corporationID, corporationName, allianceID, " .
+                "allianceName, factionID, factionName, securityStatus, damageDone, finalBlow, weaponTypeID, " .
+                "shipTypeID, created_at, updated_at " .
+                "FROM character_killmail_attackers " .
                 "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
@@ -1182,10 +1257,11 @@ namespace Seat\Migrate {
 
         public static function insertNewKillAttacker(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO kill_mail_attackers (killID, characterID, characterName, corporationID, ".
-                "corporationName, allianceID, allianceName, factionID, factionName, securityStatus, damageDone, ".
-                "finalBlow, weaponTypeID, shipTypeID, created_at, updated_at) ".
-                "VALUES (:kid, :cid, :cname, :crpid, :crpname, :aid, :aname, :fid, :fname, :ss, :dd, :fb, :wtid, ".
+
+            $sql = "INSERT IGNORE INTO kill_mail_attackers (killID, characterID, characterName, corporationID, " .
+                "corporationName, allianceID, allianceName, factionID, factionName, securityStatus, damageDone, " .
+                "finalBlow, weaponTypeID, shipTypeID, created_at, updated_at) " .
+                "VALUES (:kid, :cid, :cname, :crpid, :crpname, :aid, :aname, :fid, :fname, :ss, :dd, :fb, :wtid, " .
                 ":stid, :created, :updated)";
 
             $q = $db->prepare($sql);
@@ -1213,8 +1289,9 @@ namespace Seat\Migrate {
 
         public static function fetchOldKillDetail(PDO $db, $start, $limit)
         {
-            $sql = "SELECT killID, solarSystemID, killTime, moonID, characterID, characterName, corporationID, ".
-                "corporationName, allianceID, allianceName, factionID, factionName, damageTaken, shipTypeID, created_at, ".
+
+            $sql = "SELECT killID, solarSystemID, killTime, moonID, characterID, characterName, corporationID, " .
+                "corporationName, allianceID, allianceName, factionID, factionName, damageTaken, shipTypeID, created_at, " .
                 "updated_at FROM character_killmail_detail LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
@@ -1222,9 +1299,10 @@ namespace Seat\Migrate {
 
         public static function insertNewKillDetail(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO kill_mail_details (killID, solarSystemID, killTime, moonID, characterID, ".
-                "characterName, corporationID, corporationName, allianceID, allianceName, factionID, factionName, ".
-                "damageTaken, shipTypeID, created_at, updated_at) VALUES (:kid, :sid, :kt, :mid, :cid, :cname, ".
+
+            $sql = "INSERT IGNORE INTO kill_mail_details (killID, solarSystemID, killTime, moonID, characterID, " .
+                "characterName, corporationID, corporationName, allianceID, allianceName, factionID, factionName, " .
+                "damageTaken, shipTypeID, created_at, updated_at) VALUES (:kid, :sid, :kt, :mid, :cid, :cname, " .
                 ":crpid, :crpname, :aid, :aname, :fid, :fname, :dt, :stid, :created, :updated)";
 
             $q = $db->prepare($sql);
@@ -1252,7 +1330,8 @@ namespace Seat\Migrate {
 
         public static function fetchOldKillItem(PDO $db, $start, $limit)
         {
-            $sql = "SELECT killID, typeID, flag, qtyDropped, qtyDestroyed, singleton, created_at, ".
+
+            $sql = "SELECT killID, typeID, flag, qtyDropped, qtyDestroyed, singleton, created_at, " .
                 "updated_at FROM character_killmail_items LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
@@ -1260,7 +1339,8 @@ namespace Seat\Migrate {
 
         public static function insertNewKillItem(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO kill_mail_items (killID, typeID, flag, qtyDropped, qtyDestroyed, singleton, ".
+
+            $sql = "INSERT IGNORE INTO kill_mail_items (killID, typeID, flag, qtyDropped, qtyDestroyed, singleton, " .
                 "created_at, updated_at) VALUES (:kid, :tid, :f, :qtdrp, :qtdst, :s, :created, :updated)";
 
             $q = $db->prepare($sql);
@@ -1280,19 +1360,21 @@ namespace Seat\Migrate {
 
         public static function fetchOldMailHeader(PDO $db, $start, $limit)
         {
-            $sql = "SELECT id, characterID, messageID, senderID, senderName, sentDate, title, toCorpOrAllianceID, ".
-                   "toCharacterIDs, toListID, created_at, updated_at FROM character_mailmessages ".
-                   "LIMIT :start, :nb_rows";
+
+            $sql = "SELECT id, characterID, messageID, senderID, senderName, sentDate, title, toCorpOrAllianceID, " .
+                "toCharacterIDs, toListID, created_at, updated_at FROM character_mailmessages " .
+                "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewMailHeader(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO character_mail_messages (id, characterID, messageID, senderID, senderName, ".
-                   "sentDate, title, toCorpOrAllianceID, toCharacterIDs, toListID, created_at, updated_at) ".
-                   "VALUES (:id, :characterID, :messageID, :sendID, :senderName, :sentDate, :title, ".
-                   ":toCorpOrAllianceID, :toCharacterIDs, :toListID, :created, :updated)";
+
+            $sql = "INSERT IGNORE INTO character_mail_messages (id, characterID, messageID, senderID, senderName, " .
+                "sentDate, title, toCorpOrAllianceID, toCharacterIDs, toListID, created_at, updated_at) " .
+                "VALUES (:id, :characterID, :messageID, :sendID, :senderName, :sentDate, :title, " .
+                ":toCorpOrAllianceID, :toCharacterIDs, :toListID, :created, :updated)";
 
             $q = $db->prepare($sql);
             $q->bindParam(':id', $row['characterID'], PDO::PARAM_INT);
@@ -1315,16 +1397,18 @@ namespace Seat\Migrate {
 
         public static function fetchOldMailBody(PDO $db, $start, $limit)
         {
-            $sql = "SELECT messageID, body, created_at, updated_at FROM character_mailbodies ".
-                   "LIMIT :start, :nb_rows";
+
+            $sql = "SELECT messageID, body, created_at, updated_at FROM character_mailbodies " .
+                "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewMailBody(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO character_mail_message_bodies (messageID, body, created_at, updated_at) ".
-                   "VALUES (:messageID, :body, :created, :updated)";
+
+            $sql = "INSERT IGNORE INTO character_mail_message_bodies (messageID, body, created_at, updated_at) " .
+                "VALUES (:messageID, :body, :created, :updated)";
 
             $q = $db->prepare($sql);
             $q->bindParam(':messageID', $row['messageID'], PDO::PARAM_INT);
@@ -1339,16 +1423,18 @@ namespace Seat\Migrate {
 
         public static function fetchOldMailingList(PDO $db, $start, $limit)
         {
-            $sql = "SELECT characterID, listID, created_at, updated_at FROM character_mailinglists ".
-                   "LIMIT :start, :nb_rows";
+
+            $sql = "SELECT characterID, listID, created_at, updated_at FROM character_mailinglists " .
+                "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewMailingList(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO character_mailing_lists (characterID, listID, created_at, updated_at) ".
-                   "VALUES (:characterID, :listID, :created, :updated)";
+
+            $sql = "INSERT IGNORE INTO character_mailing_lists (characterID, listID, created_at, updated_at) " .
+                "VALUES (:characterID, :listID, :created, :updated)";
 
             $q = $db->prepare($sql);
             $q->bindParam(':characterID', $row['characterID'], PDO::PARAM_INT);
@@ -1363,16 +1449,18 @@ namespace Seat\Migrate {
 
         public static function fetchOldMailingInfo(PDO $db, $start, $limit)
         {
-            $sql = "SELECT listID, displayName, created_at, updated_at FROM character_mailinglists ".
-                   "LIMIT :start, :nb_rows";
+
+            $sql = "SELECT listID, displayName, created_at, updated_at FROM character_mailinglists " .
+                "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewMailingInfo(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO character_mailing_list_infos (listID, displayName, created_at, updated_at) ".
-                   "VALUES (:listID, :displayName, :created, :updated)";
+
+            $sql = "INSERT IGNORE INTO character_mailing_list_infos (listID, displayName, created_at, updated_at) " .
+                "VALUES (:listID, :displayName, :created, :updated)";
 
             $q = $db->prepare($sql);
             $q->bindParam(':listID', $row['characterID'], PDO::PARAM_INT);
@@ -1387,19 +1475,21 @@ namespace Seat\Migrate {
 
         public static function fetchOldNotification(PDO $db, $start, $limit)
         {
-            $sql = "SELECT id, characterID, notificationID, typeID, senderID, senderName, sentDate, `read`, ".
-                   "created_at, updated_at FROM character_notifications ".
-                   "LIMIT :start, :nb_rows";
+
+            $sql = "SELECT id, characterID, notificationID, typeID, senderID, senderName, sentDate, `read`, " .
+                "created_at, updated_at FROM character_notifications " .
+                "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewNotification(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO character_notifications (id, characterID, notificationID, typeID, senderID, ".
-                   "senderName, sentDate, `read`, created_at, updated_at) ".
-                   "VALUES (:id, :characterID, :notificationID, :typeID, :senderID, :senderName, :sentDate, :flag, ".
-                   ":created, :updated)";
+
+            $sql = "INSERT IGNORE INTO character_notifications (id, characterID, notificationID, typeID, senderID, " .
+                "senderName, sentDate, `read`, created_at, updated_at) " .
+                "VALUES (:id, :characterID, :notificationID, :typeID, :senderID, :senderName, :sentDate, :flag, " .
+                ":created, :updated)";
 
             $q = $db->prepare($sql);
             $q->bindParam(':id', $row['id'], PDO::PARAM_INT);
@@ -1420,16 +1510,18 @@ namespace Seat\Migrate {
 
         public static function fetchOldNotificationContent(PDO $db, $start, $limit)
         {
-            $sql = "SELECT notificationID, text, created_at, updated_at FROM character_notification_texts ".
-                   "LIMIT :start, :nb_rows";
+
+            $sql = "SELECT notificationID, text, created_at, updated_at FROM character_notification_texts " .
+                "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewNotificationContent(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO character_notifications_texts (notificationID, text, created_at, updated_at) ".
-                   "VALUES (:notificationID, :text, :created, :updated)";
+
+            $sql = "INSERT IGNORE INTO character_notifications_texts (notificationID, text, created_at, updated_at) " .
+                "VALUES (:notificationID, :text, :created, :updated)";
 
             $q = $db->prepare($sql);
             $q->bindParam(':notificationID', $row['notificationID'], PDO::PARAM_INT);
@@ -1446,25 +1538,28 @@ namespace Seat\Migrate {
 
     class CorporationUpgrade
     {
+
         public static function fetchOldMarketOrder(PDO $db, $start, $limit)
         {
-            $sql = "SELECT `orderID`, `corporationID`, `charID`, `stationID`, `volEntered`, `volRemaining`, ".
-                     "`minVolume`, `orderState`, `typeID`, `range`, `accountKey`, `duration`, `escrow`, `price`, ".
-                     "`bid`, `issued`, `created_at`, `updated_at` " .
-                     "FROM corporation_marketorders ".
-                     "LIMIT :start, :nb_rows";
+
+            $sql = "SELECT `orderID`, `corporationID`, `charID`, `stationID`, `volEntered`, `volRemaining`, " .
+                "`minVolume`, `orderState`, `typeID`, `range`, `accountKey`, `duration`, `escrow`, `price`, " .
+                "`bid`, `issued`, `created_at`, `updated_at` " .
+                "FROM corporation_marketorders " .
+                "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewMarketOrder(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO corporation_market_orders (`orderID`, `corporationID`, `charID`, `stationID`, ".
-                   "`volEntered`, `volRemaining`, `minVolume`, `orderState`, `typeID`, `range`, `accountKey`, ".
-                   "`duration`, `escrow`, `price`, `bid`, `issued`, `created_at`, `updated_at`) " .
-                   "VALUES (:orderID, :corporationID, :charID, :stationID, :volEntered, :volRemaining, ".
-                   ":minVolume, :orderState, :typeID, :range, :accountKey, :duration, :escrow, :price, :bid, ".
-                   ":issued, :created, :updated)";
+
+            $sql = "INSERT IGNORE INTO corporation_market_orders (`orderID`, `corporationID`, `charID`, `stationID`, " .
+                "`volEntered`, `volRemaining`, `minVolume`, `orderState`, `typeID`, `range`, `accountKey`, " .
+                "`duration`, `escrow`, `price`, `bid`, `issued`, `created_at`, `updated_at`) " .
+                "VALUES (:orderID, :corporationID, :charID, :stationID, :volEntered, :volRemaining, " .
+                ":minVolume, :orderState, :typeID, :range, :accountKey, :duration, :escrow, :price, :bid, " .
+                ":issued, :created, :updated)";
 
             $q = $db->prepare($sql);
             $q->bindParam(':orderID', $row['orderID'], PDO::PARAM_INT);
@@ -1493,23 +1588,25 @@ namespace Seat\Migrate {
 
         public static function fetchOldJournal(PDO $db, $start, $limit)
         {
-            $sql = "SELECT `hash`, `corporationID`, `accountKey`, `refID`, `date`, `refTypeID`, `ownerName1`, ".
-                   "`ownerID1`, `ownerName2`, `ownerID2`, `argName1`, `argID1`, `amount`, `balance`, reason, ".
-                   "owner1TypeID, owner2TypeID, created_at, updated_at ".
-                   "FROM corporation_walletjournal ".
-                   "LIMIT :start, :nb_rows";
+
+            $sql = "SELECT `hash`, `corporationID`, `accountKey`, `refID`, `date`, `refTypeID`, `ownerName1`, " .
+                "`ownerID1`, `ownerName2`, `ownerID2`, `argName1`, `argID1`, `amount`, `balance`, reason, " .
+                "owner1TypeID, owner2TypeID, created_at, updated_at " .
+                "FROM corporation_walletjournal " .
+                "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewJournal(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO corporation_wallet_journals (`hash`, `corporationID`, `accountKey`, `refID`, ".
-                   "`date`, `refTypeID`, `ownerName1`, `ownerID1`, `ownerName2`, `ownerID2`, `argName1`, ".
-                   "`argID1`, `amount`, `balance`, `reason`, `owner1TypeID`, `owner2TypeID`, `created_at`, ".
-                   "`updated_at`) VALUES (:hash, :corporationID, :accountKey, :refID, :date, :refTypeID, ".
-                   ":ownerName1, :ownerID1, :ownerName2, :ownerID2, :argName1, :argID1, :amount, :balance, ".
-                   ":reason, :owner1TypeID, :owner2TypeID, :created, :updated)";
+
+            $sql = "INSERT IGNORE INTO corporation_wallet_journals (`hash`, `corporationID`, `accountKey`, `refID`, " .
+                "`date`, `refTypeID`, `ownerName1`, `ownerID1`, `ownerName2`, `ownerID2`, `argName1`, " .
+                "`argID1`, `amount`, `balance`, `reason`, `owner1TypeID`, `owner2TypeID`, `created_at`, " .
+                "`updated_at`) VALUES (:hash, :corporationID, :accountKey, :refID, :date, :refTypeID, " .
+                ":ownerName1, :ownerID1, :ownerName2, :ownerID2, :argName1, :argID1, :amount, :balance, " .
+                ":reason, :owner1TypeID, :owner2TypeID, :created, :updated)";
 
             $q = $db->prepare($sql);
             $q->bindParam(':hash', $row['hash'], PDO::PARAM_STR);
@@ -1539,24 +1636,26 @@ namespace Seat\Migrate {
 
         public static function fetchOldTransaction(PDO $db, $start, $limit)
         {
-            $sql = "SELECT `hash`, corporationID, accountKey, transactionDateTime, transactionID, ".
-                   "quantity, typeName, typeID, price, clientID, clientName, stationID, stationName, ".
-                   "transactionType, transactionFor, journalTransactionID, clientTypeID, created_at, ".
-                   "updated_at FROM corporation_wallettransactions LIMIT :start, :nb_rows";
+
+            $sql = "SELECT `hash`, corporationID, accountKey, transactionDateTime, transactionID, " .
+                "quantity, typeName, typeID, price, clientID, clientName, stationID, stationName, " .
+                "transactionType, transactionFor, journalTransactionID, clientTypeID, created_at, " .
+                "updated_at FROM corporation_wallettransactions LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewTransaction(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO corporation_wallet_transactions (`hash`, corporationID, accountKey, ".
-                   "transactionDateTime, transactionID, quantity, typeName, typeID, price, clientID, ".
-                   "clientName, stationID, stationName, transactionType, transactionFor, ".
-                   "journalTransactionID, clientTypeID, created_at, updated_at) VALUES (:hash, ".
-                   ":corporationID, :accountKey, :transactionDateTime, :transactionID, :quantity, ".
-                   ":typeName, :typeID, :price, :clientID, :clientName, :stationID, :stationName, ".
-                   ":transactionType, :transactionFor, :journalTransactionID, :clientTypeID, :created, ".
-                   ":updated)";
+
+            $sql = "INSERT IGNORE INTO corporation_wallet_transactions (`hash`, corporationID, accountKey, " .
+                "transactionDateTime, transactionID, quantity, typeName, typeID, price, clientID, " .
+                "clientName, stationID, stationName, transactionType, transactionFor, " .
+                "journalTransactionID, clientTypeID, created_at, updated_at) VALUES (:hash, " .
+                ":corporationID, :accountKey, :transactionDateTime, :transactionID, :quantity, " .
+                ":typeName, :typeID, :price, :clientID, :clientName, :stationID, :stationName, " .
+                ":transactionType, :transactionFor, :journalTransactionID, :clientTypeID, :created, " .
+                ":updated)";
 
             $q = $db->prepare($sql);
             $q->bindParam(':hash', $row['hash'], PDO::PARAM_STR);
@@ -1586,17 +1685,19 @@ namespace Seat\Migrate {
 
         public static function fetchOldKill(PDO $db, $start, $limit)
         {
-            $sql = "SELECT corporationID, killID, created_at, updated_at ".
-                   "FROM corporation_killmails ".
-                   "LIMIT :start, :nb_rows";
+
+            $sql = "SELECT corporationID, killID, created_at, updated_at " .
+                "FROM corporation_killmails " .
+                "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
         }
 
         public static function insertNewKill(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO corporation_kill_mails (corporationID, killID, created_at, updated_at) ".
-                   "VALUES (:corporationID, :killID, :created, :updated)";
+
+            $sql = "INSERT IGNORE INTO corporation_kill_mails (corporationID, killID, created_at, updated_at) " .
+                "VALUES (:corporationID, :killID, :created, :updated)";
 
             $q = $db->prepare($sql);
             $q->bindParam(':corporationID', $row['corporationID'], PDO::PARAM_INT);
@@ -1611,10 +1712,11 @@ namespace Seat\Migrate {
 
         public static function fetchOldKillAttacker(PDO $db, $start, $limit)
         {
-            $sql = "SELECT killID, characterID, characterName, corporationID, corporationName, allianceID, ".
-                "allianceName, factionID, factionName, securityStatus, damageDone, finalBlow, weaponTypeID, ".
-                "shipTypeID, created_at, updated_at ".
-                "FROM corporation_killmail_attackers ".
+
+            $sql = "SELECT killID, characterID, characterName, corporationID, corporationName, allianceID, " .
+                "allianceName, factionID, factionName, securityStatus, damageDone, finalBlow, weaponTypeID, " .
+                "shipTypeID, created_at, updated_at " .
+                "FROM corporation_killmail_attackers " .
                 "LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
@@ -1622,10 +1724,11 @@ namespace Seat\Migrate {
 
         public static function insertNewKillAttacker(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO kill_mail_attackers (killID, characterID, characterName, corporationID, ".
-                "corporationName, allianceID, allianceName, factionID, factionName, securityStatus, damageDone, ".
-                "finalBlow, weaponTypeID, shipTypeID, created_at, updated_at) ".
-                "VALUES (:kid, :cid, :cname, :crpid, :crpname, :aid, :aname, :fid, :fname, :ss, :dd, :fb, :wtid, ".
+
+            $sql = "INSERT IGNORE INTO kill_mail_attackers (killID, characterID, characterName, corporationID, " .
+                "corporationName, allianceID, allianceName, factionID, factionName, securityStatus, damageDone, " .
+                "finalBlow, weaponTypeID, shipTypeID, created_at, updated_at) " .
+                "VALUES (:kid, :cid, :cname, :crpid, :crpname, :aid, :aname, :fid, :fname, :ss, :dd, :fb, :wtid, " .
                 ":stid, :created, :updated)";
 
             $q = $db->prepare($sql);
@@ -1653,8 +1756,9 @@ namespace Seat\Migrate {
 
         public static function fetchOldKillDetail(PDO $db, $start, $limit)
         {
-            $sql = "SELECT killID, solarSystemID, killTime, moonID, characterID, characterName, corporationID, ".
-            "corporationName, allianceID, allianceName, factionID, factionName, damageTaken, shipTypeID, created_at, ".
+
+            $sql = "SELECT killID, solarSystemID, killTime, moonID, characterID, characterName, corporationID, " .
+                "corporationName, allianceID, allianceName, factionID, factionName, damageTaken, shipTypeID, created_at, " .
                 "updated_at FROM corporation_killmail_detail LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
@@ -1662,9 +1766,10 @@ namespace Seat\Migrate {
 
         public static function insertNewKillDetail(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO kill_mail_details (killID, solarSystemID, killTime, moonID, characterID, ".
-                "characterName, corporationID, corporationName, allianceID, allianceName, factionID, factionName, ".
-                "damageTaken, shipTypeID, created_at, updated_at) VALUES (:kid, :sid, :kt, :mid, :cid, :cname, ".
+
+            $sql = "INSERT IGNORE INTO kill_mail_details (killID, solarSystemID, killTime, moonID, characterID, " .
+                "characterName, corporationID, corporationName, allianceID, allianceName, factionID, factionName, " .
+                "damageTaken, shipTypeID, created_at, updated_at) VALUES (:kid, :sid, :kt, :mid, :cid, :cname, " .
                 ":crpid, :crpname, :aid, :aname, :fid, :fname, :dt, :stid, :created, :updated)";
 
             $q = $db->prepare($sql);
@@ -1692,7 +1797,8 @@ namespace Seat\Migrate {
 
         public static function fetchOldKillItem(PDO $db, $start, $limit)
         {
-            $sql = "SELECT killID, typeID, flag, qtyDropped, qtyDestroyed, singleton, created_at, ".
+
+            $sql = "SELECT killID, typeID, flag, qtyDropped, qtyDestroyed, singleton, created_at, " .
                 "updated_at FROM corporation_killmail_items LIMIT :start, :nb_rows";
 
             return Helper::fetchOld($db, $start, $limit, $sql);
@@ -1700,7 +1806,8 @@ namespace Seat\Migrate {
 
         public static function insertNewKillItem(PDO $db, $row)
         {
-            $sql = "INSERT IGNORE INTO kill_mail_items (killID, typeID, flag, qtyDropped, qtyDestroyed, singleton, ".
+
+            $sql = "INSERT IGNORE INTO kill_mail_items (killID, typeID, flag, qtyDropped, qtyDestroyed, singleton, " .
                 "created_at, updated_at) VALUES (:kid, :tid, :f, :qtdrp, :qtdst, :s, :created, :updated)";
 
             $q = $db->prepare($sql);
@@ -1723,7 +1830,7 @@ namespace Seat\Migrate {
      * AUTO START SCRIPT
      */
 
-    $parameters = getopt('', ['ohost::','oport::','oname:','ouser:','opass::','nhost::','nport::','nname:','nuser:','npass::']);
+    $parameters = getopt('', ['ohost::', 'oport::', 'oname:', 'ouser:', 'opass::', 'nhost::', 'nport::', 'nname:', 'nuser:', 'npass::']);
     $parameters['ohost'] = (isset($parameters['ohost'])) ? $parameters['ohost'] : "localhost";
     $parameters['nhost'] = (isset($parameters['nhost'])) ? $parameters['nhost'] : "localhost";
     $parameters['oport'] = (isset($parameters['oport'])) ? $parameters['oport'] : "3306";
