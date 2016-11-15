@@ -16,7 +16,8 @@
         "league/csv": "^8.1",
         "doctrine/dbal": "^2.5",
         "laravel/socialite": "^2.0",
-        "theiconic/php-ga-measurement-protocol": "^2.0"
+        "theiconic/php-ga-measurement-protocol": "^2.0",
+        "yajra/laravel-datatables-oracle": "^6.21"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
