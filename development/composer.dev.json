@@ -17,7 +17,8 @@
         "doctrine/dbal": "^2.5",
         "laravel/socialite": "^2.0",
         "theiconic/php-ga-measurement-protocol": "^2.0",
-        "yajra/laravel-datatables-oracle": "^6.21"
+        "yajra/laravel-datatables-oracle": "^6.21",
+        "yzalis/supervisor": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
