@@ -25,7 +25,9 @@ echo " * Publishing vendor directories"
 php artisan vendor:publish --force
 echo " * Running any database migrations"
 php artisan migrate
-echo " * Running the schedule seeder"
+echo " * Running the seeders"
+php artisan db:seed --class=Seat\\Notifications\\database\\seeds\\ScheduleSeeder
+php artisan db:seed --class=Seat\\Services\\database\\seeds\\NotificationTypesSeeder
 php artisan db:seed --class=Seat\\Services\\database\\seeds\\ScheduleSeeder
 echo " * Asking queue workers to restart"
 php artisan queue:restart
