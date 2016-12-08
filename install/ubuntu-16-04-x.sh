@@ -71,7 +71,7 @@ echo " * Running mysql_config_editor"
 echo
 CONFIG_EDITOR=$(expect -c "
 set timeout 10
-spawn mysql_config_editor set --login-path=seatinstall --host=localhost --user=root --password 
+spawn mysql_config_editor set --login-path=seatinstall --host=localhost --user=root --password
 expect \"Enter password:\"
 send \"$MYSQL_ROOT_PASS\r\"
 expect eof
@@ -139,7 +139,7 @@ echo " * Configuring Supervisor for 4 workers"
 echo
 cat >>/etc/supervisor/conf.d/seat.conf <<EOL
 [program:seat]
-command=/usr/bin/php /var/www/seat/artisan queue:listen --queue=high,medium,low,default --tries 1 --timeout=3600
+command=/usr/bin/php /var/www/seat/artisan queue:work --queue=high,medium,low,default --tries 1 --timeout=86100
 process_name = %(program_name)s-80%(process_num)02d
 stdout_logfile = /var/log/seat-80%(process_num)02d.log
 stdout_logfile_maxbytes=100MB
