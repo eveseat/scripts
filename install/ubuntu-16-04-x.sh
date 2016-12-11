@@ -156,6 +156,9 @@ service supervisor restart
 sleep 1
 supervisorctl status
 
+echo " * Ensuring supervisor starts on boot"
+systemctl enable supervisor.service
+
 echo " * Adding crontab entry"
 echo
 TMP_TAB=$(mktemp)
