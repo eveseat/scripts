@@ -29,8 +29,6 @@ echo " * Running the seeders"
 php artisan db:seed --class=Seat\\Notifications\\database\\seeds\\ScheduleSeeder
 php artisan db:seed --class=Seat\\Services\\database\\seeds\\NotificationTypesSeeder
 php artisan db:seed --class=Seat\\Services\\database\\seeds\\ScheduleSeeder
-echo " * Asking queue workers to restart"
-php artisan queue:restart
 echo " * Taking SeAT out of maintenance mode"
 php artisan up
 echo " * Done"
