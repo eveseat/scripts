@@ -36,5 +36,6 @@ curl -fsSL https://git.io/vXb0u -o /usr/local/bin/seat
 chmod +x /usr/local/bin/seat
 hash -r
 
-echo " * Running SeAT installer"
-seat install:production
+echo " * Installer download complete!"
+echo " * You can now run the seat tool by just running the 'seat' command."
+echo " * Start installing SeAT with: seat install:production"
