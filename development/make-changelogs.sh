@@ -41,39 +41,42 @@ if [[ ! -d "$CURRENT_DIRECTORY/$CHANGELOGS_DIR" ]]; then
     exit 1
 fi
 
+# The command used to get changelogs
+CHANGELOG_COMMAND="git log --pretty=format:\"%h%x09%an%x09%ad%x09%s\""
+
 echo " + Generating changelogs for $MAIN_SEAT_REPO"
 cd $MAIN_SEAT_REPO
-MAIN_SEAT_CHANGELOG=`git log --oneline --decorate`
+MAIN_SEAT_CHANGELOG=`eval $CHANGELOG_COMMAND`
 cd $CURRENT_DIRECTORY
 
 echo " + Generating changelogs for $API_REPO"
 cd $API_REPO
-API_CHANGELOG=`git log --oneline --decorate`
+API_CHANGELOG=`eval $CHANGELOG_COMMAND`
 cd $CURRENT_DIRECTORY
 
 echo " + Generating changelogs for $CONSOLE_REPO"
 cd $CONSOLE_REPO
-CONSOLE_CHANGELOG=`git log --oneline --decorate`
+CONSOLE_CHANGELOG=`eval $CHANGELOG_COMMAND`
 cd $CURRENT_DIRECTORY
 
 echo " + Generating changelogs for $EVEAPI_REPO"
 cd $EVEAPI_REPO
-EVEAPI_CHANGELOG=`git log --oneline --decorate`
+EVEAPI_CHANGELOG=`eval $CHANGELOG_COMMAND`
 cd $CURRENT_DIRECTORY
 
 echo " + Generating changelogs for $NOTIFICATIONS_REPO"
 cd $NOTIFICATIONS_REPO
-NOTIFICATIONS_CHANGELOG=`git log --oneline --decorate`
+NOTIFICATIONS_CHANGELOG=`eval $CHANGELOG_COMMAND`
 cd $CURRENT_DIRECTORY
 
 echo " + Generating changelogs for $SERVICES_REPO"
 cd $SERVICES_REPO
-SERVICES_CHANGELOG=`git log --oneline --decorate`
+SERVICES_CHANGELOG=`eval $CHANGELOG_COMMAND`
 cd $CURRENT_DIRECTORY
 
 echo " + Generating changelogs for $WEB_REPO"
 cd $WEB_REPO
-WEB_CHANGELOG=`git log --oneline --decorate`
+WEB_CHANGELOG=`eval $CHANGELOG_COMMAND`
 cd $CURRENT_DIRECTORY
 
 echo " + Writing Changelogs"
