@@ -1,0 +1,7 @@
+#!/usr/bin/expect
+
+set timeout 10
+spawn php /var/www/seat/artisan seat:admin:reset
+expect " > " { send "password\r" }
+spawn php /var/www/seat/artisan seat:admin:email
+expect ">" { send "vagrant@ubuntu.local\r" }
