@@ -5,7 +5,7 @@
 
 # Installation
 
-* `git clone git@github.com:BenHUET/scripts.git`
+* `git clone git@github.com:eveseat/scripts.git`
 * `cd scripts/vagrant`
 * `vagrant up`. It can take some times since it's deploying a whole dev environnement (mysql, php, apache, composer...) and configuring SeAT.
 * `vagrant ssh` to open an SSH connection to the machine.
