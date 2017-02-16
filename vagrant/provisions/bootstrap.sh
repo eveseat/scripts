@@ -33,10 +33,12 @@ adduser ubuntu www-data
 chown -R www-data:www-data /var/www
 chmod -R guo+w /var/www/seat/storage/
 cp /vagrant/provisions/vhost /etc/apache2/sites-available/seat.conf
+chmod 777 -R /var/www/seat
 a2dissite 000-default.conf
 a2ensite seat
 a2enmod rewrite
 apachectl restart
+
 
 echo " "
 echo " "
