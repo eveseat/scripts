@@ -18,7 +18,8 @@
         "laravel/socialite": "^2.0",
         "theiconic/php-ga-measurement-protocol": "^2.0",
         "yajra/laravel-datatables-oracle": "6.21.*",
-        "yzalis/supervisor": "^1.0"
+        "yzalis/supervisor": "^1.0",
+        "components/font-awesome": "^4.7"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
