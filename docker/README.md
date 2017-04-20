@@ -1,32 +1,27 @@
-# docker-compose for SeAT development
-### Build image
-```
-git clone git@github.com:eveseat/scripts.git
-cd scripts
-docker-compose build
-```
-This will take some times but there is only 1 image to build (mysql and redis are pulled already built from the docker hub).
-### Run
-```
-docker-compose up -d
-```
-3 containers will be created. The first time the `eveseat_app` is ran, it will migrate all data in the DB so it can take some times. You can monitor this by using the command `docker logs eveseat_app`.
+# seat single dockerfile
 
-After that, your SeAT instance should be available at http://localhost:8080 (`admin:password`). The MySQL database should be available too at localhost on port 3366 (`root:password`).
-To properly stop the SeAT instance, use : `docker-compose stop`.
+This dockerfile is for a single container installation of SeAT. Probably only really useful for demo purposes.
 
-### Shell
-To connect to the container, use : 
+## build
+
+After cloning the repo, build me with:
+
 ```
-docker exec -it eveseat_app /bin/bash
+docker build -t eveseat/seat .
 ```
-`nano` is installed on this container to edit files.
-### Volumes for development
-By default, the `scripts/docker/packages` directory will be mounted to `/var/www/seat/packages` in the container allowing you to develop your package outside of the container. 
-You can change this configuration in the `docker-compose.yml` :
+
+## run
+
+After build, run me with:
+
 ```
-    volumes:
-      - ./packages:/var/www/seat/packages
+docker run -d --name seat -p 80:80 -it eveseat/seat
 ```
-### Persistence
-Until you explicitly delete containers, all datas are persistents even if you stop/start the containers.
+
+## shell
+
+After starting the container, drop into a shell with:
+
+```
+docker exec -it seat bash
+```
