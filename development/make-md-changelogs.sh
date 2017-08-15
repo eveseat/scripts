@@ -99,7 +99,7 @@ do
 	echo "File output will be : $markdown_file"
 	
 	# list all tags from the package
-	tags="$(git tag --sort=v:refname)"
+	tags="$(git tag --sort=v:authordate:short)"
 
 	# append header
 	echo $'![SeAT](http://i.imgur.com/aPPOxSK.png)\n' > "$markdown_file"
