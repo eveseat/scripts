@@ -2,8 +2,10 @@
 
 # The list of packages for which we want to generate markdown formatted changelog
 packages=( api console eveapi notifications services web )
+
 # The root repository location
 repository_directory=$(pwd)"/packages/eveseat/"
+
 # The directory where all markdown formatted changelogs file will be generated
 changelog_directory=$(pwd)"/packages/eveseat/docs/docs/changelogs/"
 
@@ -33,11 +35,11 @@ do
             # absolute directory
             if [[ "$OPTARG" = /* ]]
             then
-                echo "Switch input directory to $OPTARG/"$'\n'
+                echo "Switching input directory to $OPTARG/"
                 repository_directory=$OPTARG/
             # relative directory
             else
-                echo "Switch input directory to $(pwd)/$OPTARG/"$'\n'
+                echo "Switching input directory to $(pwd)/$OPTARG/"
                 repository_directory=$(pwd)/$OPTARG/
             fi
             ;;
@@ -47,17 +49,17 @@ do
 
             if [[ "$OPTARG" = /* ]]
             then
-                echo "Switch output directory to $OPTARG/"$'\n'
+                echo "Switching output directory to $OPTARG/"
                 changelog_directory=$OPTARG/
             else
-                echo "Switch output directory to $(pwd)/$OPTARG/"$'\n'
+                echo "Switching output directory to $(pwd)/$OPTARG/"
                 changelog_directory=$(pwd)/$OPTARG/
             fi
             ;;
         # packages parameter
         p)
             echo "Custom packages has been selected."
-            echo "Update packages to ( $OPTARG )"$'\n'
+            echo "Update packages to ( $OPTARG )"
 
             packages=( $OPTARG )
             ;;
@@ -89,47 +91,45 @@ do
         continue
     fi
 
-	markdown_file=$changelog_directory$package.md
-	oldtag=""
+    markdown_file=$changelog_directory$package.md
+    oldtag=""
 
-	# move to package directory
-	cd "$repository_directory$package"
-	
-	echo "Generating changelog for $package"
-	echo "File output will be : $markdown_file"
-	
-	# list all tags from the package
-	tags="$(git tag --sort=v:authordate:short)"
+    # move to package directory
+    cd "$repository_directory$package"
 
-	# append header
-	echo $'![SeAT](http://i.imgur.com/aPPOxSK.png)\n' > "$markdown_file"
-	echo $"# $package change logs" >> "$markdown_file"
-	echo $'Generated with: `git log --pretty=format:%h%x09%x09%s`\n' >> "$markdown_file"
+    echo "Generating changelog for $package, file output will be : $markdown_file"
 
-	# iterate over git tags
-	while read newtag
-	do
-		# add version header
-		echo $"### $newtag" >> "$markdown_file"
-		# open commit block
-		echo $'```' >> "$markdown_file"
+    # list all tags from the package
+    tags="$(git tag --sort=v:authordate:short)"
 
-		# search for commits
-		if [ -z "$oldtag" ]
-		then
-			git log --pretty=format:%h%x09%x09%s $newtag >> "$markdown_file" # list all commit up to the current tag
-		else
-			git log --pretty=format:%h%x09%x09%s $newtag ^$oldtag >> "$markdown_file" # make diff between previous and current tags
-		fi
-		
-		# close commit block
-		echo $'\n```' >> "$markdown_file"
-		
-		# buffer the tag for next diff iteration
-		oldtag=$newtag
-	done <<< "$tags"
-	
-	echo ""
+    # append header
+    echo $'![SeAT](http://i.imgur.com/aPPOxSK.png)\n' > "$markdown_file"
+    echo $"# $package change logs" >> "$markdown_file"
+    echo $'Generated with: `git log --pretty=format:"%h%>(12)%ad %<(7)%aN%d %s" --date=short`\n' >> "$markdown_file"
+
+    # iterate over git tags
+    while read newtag
+    do
+        # add version header
+        echo $"### $newtag" >> "$markdown_file"
+        # open commit block
+        echo $'```' >> "$markdown_file"
+
+        # search for commits
+        if [ -z "$oldtag" ]
+        then
+            git log --pretty=format:"%h%>(12)%ad %<(7)%aN%d %s" --date=short $newtag >> "$markdown_file" # list all commit up to the current tag
+        else
+            git log --pretty=format:"%h%>(12)%ad %<(7)%aN%d %s" --date=short $newtag ^$oldtag >> "$markdown_file" # make diff between previous and current tags
+        fi
+
+        # close commit block
+        echo $'\n```' >> "$markdown_file"
+
+        # buffer the tag for next diff iteration
+        oldtag=$newtag
+    done <<< "$tags"
+
 done
 
 echo "Done !"
