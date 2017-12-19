@@ -7,24 +7,23 @@
     "minimum-stability": "alpha",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.0.0",
-        "fideloper/proxy": "~3.3",
-        "laravel/framework": "5.5.*",
-        "laravel/tinker": "~1.0",
-        "predis/predis": "^1.1",
-
+        "php": ">=7.1.0",
         "3rdpartyeve/phealng": "2.3.*",
-        "guzzlehttp/guzzle": "^6.3",
         "coduo/php-humanizer": "^2.0",
-        "pragmarx/google2fa": "^2.0",
-        "league/csv": "^9.1",
+        "components/font-awesome": "^4.7",
         "doctrine/dbal": "^2.6",
+        "fideloper/proxy": "~3.3",
+        "guzzlehttp/guzzle": "^6.3",
+        "laravel/framework": "5.5.*",
+        "laravel/horizon": "^1.0",
         "laravel/socialite": "^3.0",
+        "laravel/tinker": "~1.0",
+        "league/csv": "^9.1",
+        "pragmarx/google2fa": "^2.0",
+        "predis/predis": "^1.1",
         "theiconic/php-ga-measurement-protocol": "^2.0",
         "yajra/laravel-datatables-oracle": "~6",
-        "yzalis/supervisor": "^1.1",
-        "components/font-awesome": "^4.7"
-
+        "yzalis/supervisor": "^1.1"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
