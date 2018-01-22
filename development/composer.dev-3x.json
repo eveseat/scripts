@@ -44,7 +44,8 @@
             "Seat\\Eveapi\\": "packages/eveseat/eveapi/src/",
             "Seat\\Services\\": "packages/eveseat/services/src/",
             "Seat\\Web\\": "packages/eveseat/web/src/",
-            "Seat\\Notifications\\": "packages/eveseat/notifications/src/"
+            "Seat\\Notifications\\": "packages/eveseat/notifications/src/",
+            "Seat\\Eseye\\": "packages/eveseat/eseye/src/"
         },
         "files": [
             "packages/eveseat/services/src/Helpers/helpers.php"
