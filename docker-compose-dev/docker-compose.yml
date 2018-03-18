@@ -1,0 +1,79 @@
+version: "3.2"
+
+services:
+
+  mariadb:
+    image: mariadb:10.3
+    container_name: eveseat-mariadb
+    restart: always
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_USER: seat
+      MYSQL_PASSWORD: seat
+      MYSQL_DATABASE: seat
+    volumes:
+      - "mariadb-data:/var/lib/mysql"
+    networks:
+      - seat-network
+    ports:
+      - "3366:3306"
+
+  redis:
+    image: redis:3
+    container_name: eveseat-redis
+    command: redis-server --appendonly yes
+    restart: always
+    volumes:
+      - "redis-data:/data"
+    networks:
+      - seat-network
+
+  nginx:
+    image: nginx:1.13-alpine
+    depends_on:
+      - seat-app
+    container_name: eveseat-nginx
+    restart: always
+    volumes:
+      - ./config/site.conf:/etc/nginx/conf.d/default.conf
+      # Remove the comment below to enable nginx logs.
+      #- ./logs/nginx/:/var/log/nginx/
+    ports:
+      - "8080:80"
+      - "8443:443"
+    networks:
+      - seat-network
+
+  seat-app:
+    build:
+      context: ./eveseat-app
+    container_name: eveseat-app
+    restart: always
+    volumes:
+      - ./seat:/var/www/seat
+    depends_on:
+      - mariadb
+      - redis
+    networks:
+      - seat-network
+
+  seat-worker:
+    build:
+      context: ./eveseat-worker
+    container_name: eveseat-worker
+    restart: always
+    volumes:
+      - ./seat:/var/www/seat
+    depends_on:
+      - seat-app # so that we can get composer installed
+      - mariadb
+      - redis
+    networks:
+      - seat-network
+
+volumes:
+    redis-data:
+    mariadb-data:
+
+networks:
+    seat-network:
