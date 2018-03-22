@@ -50,7 +50,7 @@ services:
     container_name: eveseat-app
     restart: always
     volumes:
-      - ./seat:/var/www/seat
+      - /host_mnt/h/Users/elfaus/PhpstormProjects/seatng/core/seat:/var/www/seat
     depends_on:
       - mariadb
       - redis
@@ -63,7 +63,7 @@ services:
     container_name: eveseat-worker
     restart: always
     volumes:
-      - ./seat:/var/www/seat
+      - /host_mnt/h/Users/elfaus/PhpstormProjects/seatng/core/seat:/var/www/seat
     depends_on:
       - seat-app # so that we can get composer installed
       - mariadb
