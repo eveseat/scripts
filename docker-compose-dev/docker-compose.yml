@@ -35,8 +35,9 @@ services:
     container_name: eveseat-nginx
     restart: always
     volumes:
-      - ./config/site.conf:/etc/nginx/conf.d/default.conf
-      # Remove the comment below to enable nginx logs.
+      - ./seat/public:/var/www/html/public
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+      # Remove the comment below to enable nginx logs to disk.
       #- ./logs/nginx/:/var/log/nginx/
     ports:
       - "8080:80"
@@ -50,7 +51,7 @@ services:
     container_name: eveseat-app
     restart: always
     volumes:
-      - ./seat:/var/www/seat
+      - ./seat:/var/www/html
     depends_on:
       - mariadb
       - redis
