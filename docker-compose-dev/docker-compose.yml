@@ -51,7 +51,7 @@ services:
     container_name: eveseat-app
     restart: always
     volumes:
-      - ./seat:/var/www/html
+      - ./seat:/var/www/seat
     depends_on:
       - mariadb
       - redis
