@@ -9,7 +9,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY startup.sh /root/startup.sh
 RUN chmod +x /root/startup.sh
 
-VOLUME /var/www/html
+VOLUME /var/www/seat
 
 CMD ["php-fpm", "-F"]
 

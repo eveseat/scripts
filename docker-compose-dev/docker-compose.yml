@@ -35,7 +35,9 @@ services:
     container_name: eveseat-nginx
     restart: always
     volumes:
-      - ./seat/public:/var/www/html/public
+      - type: bind
+        source: ${SEAT_CORE}/public
+        target: /var/www/seat/public
       - ./config/nginx.conf:/etc/nginx/nginx.conf
       # Remove the comment below to enable nginx logs to disk.
       #- ./logs/nginx/:/var/log/nginx/
@@ -51,7 +53,30 @@ services:
     container_name: eveseat-app
     restart: always
     volumes:
-      - ./seat:/var/www/html
+      - type: bind
+        source: ${SEAT_CORE}
+        target: /var/www/seat
+      - type: bind
+        source: ${SEAT_API}
+        target: /var/www/seat/packages/eveseat/api
+      - type: bind
+        source: ${SEAT_CONSOLE}
+        target: /var/www/seat/packages/eveseat/console
+      - type: bind
+        source: ${SEAT_EVEAPI}
+        target: /var/www/seat/packages/eveseat/eveapi
+      - type: bind
+        source: ${SEAT_SERVICES}
+        target: /var/www/seat/packages/eveseat/services
+      - type: bind
+        source: ${SEAT_WEB}
+        target: /var/www/seat/packages/eveseat/web
+      - type: bind
+        source: ${SEAT_NOTIFICATIONS}
+        target: /var/www/seat/packages/eveseat/notifications
+      - type: bind
+        source: ${SEAT_ESEYE}
+        target: /var/www/seat/packages/eveseat/eseye
     depends_on:
       - mariadb
       - redis
@@ -64,7 +89,30 @@ services:
     container_name: eveseat-worker
     restart: always
     volumes:
-      - ./seat:/var/www/seat
+      - type: bind
+        source: ${SEAT_CORE}
+        target: /var/www/seat
+      - type: bind
+        source: ${SEAT_API}
+        target: /var/www/seat/packages/eveseat/api
+      - type: bind
+        source: ${SEAT_CONSOLE}
+        target: /var/www/seat/packages/eveseat/console
+      - type: bind
+        source: ${SEAT_EVEAPI}
+        target: /var/www/seat/packages/eveseat/eveapi
+      - type: bind
+        source: ${SEAT_SERVICES}
+        target: /var/www/seat/packages/eveseat/services
+      - type: bind
+        source: ${SEAT_WEB}
+        target: /var/www/seat/packages/eveseat/web
+      - type: bind
+        source: ${SEAT_NOTIFICATIONS}
+        target: /var/www/seat/packages/eveseat/notifications
+      - type: bind
+        source: ${SEAT_ESEYE}
+        target: /var/www/seat/packages/eveseat/eseye
     depends_on:
       - seat-app # so that we can get composer installed
       - mariadb
