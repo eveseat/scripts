@@ -1,8 +1,10 @@
 #!/bin/sh
 
-cd /var/www/seat
+cd /var/www/html
 
-if [ ! -f /var/www/seat/vendor/autoload.php ]; then
+if [ ! -f /var/www/html/vendor/autoload.php ]; then
+
+    # first run, lets install the app!
     composer install
 
     #sed -i -- 's/DB_USERNAME=seat/DB_USERNAME=root/g' .env
@@ -10,8 +12,8 @@ if [ ! -f /var/www/seat/vendor/autoload.php ]; then
     sed -i -- 's/APP_DEBUG=false/APP_DEBUG=true/g' .env
     sed -i -- 's/DB_HOST=127.0.0.1/DB_HOST=mariadb/g' .env
     sed -i -- 's/REDIS_HOST=127.0.0.1/REDIS_HOST=redis/g' .env
-else
-    composer update
+
+    php artisan key:generate
 fi
 
 # publish new assets
@@ -19,4 +21,3 @@ php artisan vendor:publish --force --all
 php artisan migrate
 
 php-fpm -F
-
