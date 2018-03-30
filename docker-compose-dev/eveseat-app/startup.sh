@@ -1,8 +1,8 @@
 #!/bin/sh
 
-cd /var/www/html
+cd /var/www/seat
 
-if [ ! -f /var/www/html/vendor/autoload.php ]; then
+if [ ! -f /var/www/seat/vendor/autoload.php ]; then
 
     # first run, lets install the app!
     composer install
