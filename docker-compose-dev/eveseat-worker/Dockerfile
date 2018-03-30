@@ -1,4 +1,4 @@
-FROM php:7.1-fpm-alpine
+FROM php:7.1-alpine
 
 RUN apk add --no-cache git zip unzip curl \
     libpng-dev libmcrypt-dev bzip2-dev icu-dev && \
