@@ -35,7 +35,7 @@ services:
     container_name: eveseat-nginx
     restart: always
     volumes:
-      - ./seat/public:/var/www/html/public
+      - ./seat/public:/var/www/seat/public
       - ./config/nginx.conf:/etc/nginx/nginx.conf
       # Remove the comment below to enable nginx logs to disk.
       #- ./logs/nginx/:/var/log/nginx/
