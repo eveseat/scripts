@@ -14,4 +14,4 @@ WORKDIR /var/www/seat
 
 CMD ["php-fpm", "-F"]
 
-ENTRYPOINT ["/bin/sh", "/root/startup.sh"]
+ENTRYPOINT ["/bin/bash", "/root/startup.sh"]
