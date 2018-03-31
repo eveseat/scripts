@@ -7,4 +7,7 @@ RUN apk add --no-cache git zip unzip curl \
 VOLUME /var/www
 WORKDIR /var/www/seat
 
-ENTRYPOINT ["php", "artisan", "horizon"]
+COPY startup.sh /root/startup.sh
+RUN chmod +x /root/startup.sh
+
+ENTRYPOINT ["/bin/sh", "/root/startup.sh"]
