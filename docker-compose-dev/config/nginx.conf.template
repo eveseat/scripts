@@ -34,7 +34,7 @@ http {
         root    /var/www/seat/public;
         index   index.php;
 
-        server_name _;
+        server_name ${NGINX_HOST};
 
         location / {
             try_files $uri $uri/ /index.php$is_args$args;

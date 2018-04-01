@@ -4,23 +4,23 @@ services:
 
   mariadb:
     image: mariadb:10.3
-    container_name: eveseat-mariadb
+    container_name: seat-mariadb
     restart: always
     environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-      MYSQL_USER: seat
-      MYSQL_PASSWORD: seat
-      MYSQL_DATABASE: seat
+      MYSQL_RANDOM_ROOT_PASSWORD: "${MYSQL_RANDOM_ROOT_PASSWORD}"
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       - "mariadb-data:/var/lib/mysql"
     networks:
       - seat-network
     ports:
-      - "3366:3306"
+      - "${MYSQL_EXTERNAL_PORT}:3306"
 
   redis:
     image: redis:3
-    container_name: eveseat-redis
+    container_name: seat-redis
     command: redis-server --appendonly yes
     restart: always
     volumes:
@@ -32,27 +32,34 @@ services:
     image: nginx:1.13-alpine
     depends_on:
       - seat-app
-    container_name: eveseat-nginx
+    container_name: seat-nginx
     restart: always
+    environment:
+      - NGINX_HOST=${NGINX_HOST}
     volumes:
-      - ./seat/public:/var/www/seat/public
-      - ./config/nginx.conf:/etc/nginx/nginx.conf
+      - ${SEAT_CODE}/public:/var/www/seat/public
+      - ./config/nginx.conf.template:/etc/nginx/nginx.conf.template
       # Remove the comment below to enable nginx logs to disk.
       #- ./logs/nginx/:/var/log/nginx/
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "${NGINX_HTTP}:80"
+      - "${NGINX_HTTPS}:443"
+    command: /bin/sh -c "envsubst '${NGINX_HOST}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
     networks:
       - seat-network
 
   seat-app:
     build:
       context: ./eveseat-app
-    image: eveseat-app
-    container_name: eveseat-app
+    image: seat-app
+    container_name: seat-app
     restart: always
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
-      - ./seat:/var/www/seat
+      - ${SEAT_CODE}:/var/www/seat
     depends_on:
       - mariadb
       - redis
@@ -63,10 +70,10 @@ services:
     build:
       context: ./eveseat-worker
     image: eveseat-worker
-    container_name: eveseat-worker
+    container_name: seat-worker
     restart: always
     volumes:
-      - ./seat:/var/www/seat
+      - ${SEAT_CODE}:/var/www/seat
     depends_on:
       - seat-app # so that we can get composer installed
       - mariadb

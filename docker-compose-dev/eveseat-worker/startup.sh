@@ -1,12 +1,13 @@
 #!/bin/sh
+set -e
 
 cd /var/www/seat
 
 # Ensure we have vendor/ ready
 while [ ! -f /var/www/seat/vendor/autoload.php ]
 do
-    echo "SeAT might not be ready yet... sleeping for 20 seconds"
-    sleep 20
+    echo "SeAT App container might not be ready yet... sleeping..."
+    sleep 30
 done
 
 php artisan horizon
