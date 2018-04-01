@@ -81,6 +81,24 @@ services:
     networks:
       - seat-network
 
+  seat-cron:
+    build:
+      context: ./eveseat-cron
+    image: seat-cron
+    container_name: seat-cron
+    restart: always
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - ${SEAT_CODE}:/var/www/seat
+    depends_on:
+      - mariadb
+      - redis
+    networks:
+      - seat-network
+
 volumes:
     redis-data:
     mariadb-data:
