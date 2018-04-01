@@ -26,5 +26,6 @@ fi
 # publish new assets
 php artisan vendor:publish --force --all
 php artisan migrate
+php artisan eve:update-sde -n
 
 php-fpm -F
