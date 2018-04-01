@@ -48,6 +48,7 @@ services:
   seat-app:
     build:
       context: ./eveseat-app
+    image: eveseat-app
     container_name: eveseat-app
     restart: always
     volumes:
@@ -61,6 +62,7 @@ services:
   seat-worker:
     build:
       context: ./eveseat-worker
+    image: eveseat-worker
     container_name: eveseat-worker
     restart: always
     volumes:
