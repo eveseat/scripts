@@ -24,6 +24,9 @@ if [ ! -f /var/www/seat/vendor/autoload.php ]; then
 
     composer install
     php artisan key:generate
+
+    # seed the scheduler table
+    php artisan db:seed --class=Seat\\Services\\database\\seeds\\ScheduleSeeder
 fi
 
 # Wait for the database
