@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 cd /var/www/seat
 
@@ -13,18 +14,31 @@ if [ ! -f /var/www/seat/vendor/autoload.php ]; then
         cp /var/www/seat/.env.example /var/www/seat/.env
 
         # Fix up MariaDB and Redis connection info
-        sed -i -- 's/DB_PASSWORD=secret/DB_PASSWORD=seat/g' .env
-        sed -i -- 's/APP_DEBUG=false/APP_DEBUG=true/g' .env
+        sed -i -- 's/DB_USERNAME=seat/DB_USERNAME='$MYSQL_USER'/g' .env
+        sed -i -- 's/DB_PASSWORD=secret/DB_PASSWORD='$MYSQL_PASSWORD'/g' .env
+        sed -i -- 's/DB_DATABASE=seat/DB_DATABASE='$MYSQL_DATABASE'/g' .env
         sed -i -- 's/DB_HOST=127.0.0.1/DB_HOST=mariadb/g' .env
+        sed -i -- 's/APP_DEBUG=false/APP_DEBUG=true/g' .env
         sed -i -- 's/REDIS_HOST=127.0.0.1/REDIS_HOST=redis/g' .env
     fi
 
     composer install
     php artisan key:generate
+
+    # seed the scheduler table
+    php artisan db:seed --class=Seat\\Services\\database\\seeds\\ScheduleSeeder
 fi
+
+# Wait for the database
+while ! mysqladmin ping -hmariadb --silent; do
+
+    echo "MariaDB container might not be ready yet... sleeping..."
+    sleep 3
+done
 
 # publish new assets
 php artisan vendor:publish --force --all
 php artisan migrate
+#php artisan eve:update-sde -n
 
 php-fpm -F
