@@ -15,7 +15,7 @@ cd /root/
 export DEBIAN_FRONTEND=noninteractive
 
 echo " * Installing installer dependencies"
-apt install php-cli php-mysql unzip git -y
+apt update && apt install php-cli php-mysql unzip git -y
 
 echo " * Installing SeAT tool"
 curl -fsSL https://git.io/vXb0u -o /usr/local/bin/seat
