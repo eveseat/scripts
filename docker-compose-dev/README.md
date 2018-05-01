@@ -10,3 +10,9 @@
 - `cd` into seat/
 - run `sudo nano .env` to open the .env file, change your `APP_URL=` to the URL seat will live on, enter your `EVE_CLIENT_ID` `` `EVE_CLIENT_SECRET` and `EVE_CALLBACK_URL` from the application you made a few steps ago. Save and close the file.
 - run `docker exec -it seat-app php artisan seat:admin:login` and copy the link provided, paste this into your browser and you will have created your admin account.
+
+
+
+
+## notes
+You can follow the install of the seat-app container by issuing the command `docker logs -f seat-app`.
