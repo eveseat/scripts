@@ -4,7 +4,7 @@
 - Clone this repository.
 - Copy out the `docker-compose-dev` folder somewhere  convenient or just `cd` to it.
 - If you have an existing SeAT project, set its **full path** in the `.env` file, otherwise, run `bash prepare-source.sh`.
-- Run `docker-compose seat-dev up -d`
+- Run `docker-compose up -d`
 - Give the containers some time to start up.
 ## creating the eve-online SSO application
 - go to https://developers.eveonline.com/applications and create a new application selecting `Authentication & API Access` then select all scopes.
