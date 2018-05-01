@@ -20,9 +20,9 @@
 ## notes
 You can follow the install of the seat-app container by issuing the command `docker logs -f seat-app`.
 When you see `
-Publishing complete.
-Nothing to migrate.
-[01-May-2018 10:10:35] NOTICE: fpm is running, pid 518
-[01-May-2018 10:10:35] NOTICE: ready to handle connections
+Publishing complete.  
+Nothing to migrate.  
+[01-May-2018 10:10:35] NOTICE: fpm is running, pid 518  
+[01-May-2018 10:10:35] NOTICE: ready to handle connections  
 `
 Seat is installed and ready to go. And you may now proceed with setting up the admin account.
