@@ -25,8 +25,15 @@ if [ ! -f /var/www/seat/vendor/autoload.php ]; then
     composer install
     php artisan key:generate
 
+    # Publish assets and migrate the database
+    php artisan vendor:publish --force --all
+    php artisan migrate
+
     # seed the scheduler table
     php artisan db:seed --class=Seat\\Services\\database\\seeds\\ScheduleSeeder
+
+    # Download the SDE
+    php artisan eve:update-sde -n
 fi
 
 # Wait for the database
@@ -39,6 +46,8 @@ done
 # publish new assets
 php artisan vendor:publish --force --all
 php artisan migrate
-#php artisan eve:update-sde -n
+
+# Regenerate API documentation
+php artisan l5-swagger:generate
 
 php-fpm -F

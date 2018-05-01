@@ -10,6 +10,7 @@
         "php": ">=7.1.0",
         "coduo/php-humanizer": "^2.0",
         "components/font-awesome": "^4.7",
+        "darkaonline/l5-swagger": "5.5.*",
         "doctrine/dbal": "^2.6",
         "fideloper/proxy": "~3.3",
         "guzzlehttp/guzzle": "^6.3",
