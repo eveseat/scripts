@@ -22,8 +22,8 @@ sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/
 wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 
 echo " * Adding MariaDB repostitory & GPG signing key"
-sh -c 'echo "deb [arch=amd64,i386] http://mirrors.ukfast.co.uk/sites/mariadb/repo/10.2/debian jessie main" > /etc/apt/sources.list.d/mariadb.list'
-apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xcbcb082a1bb943db
+sh -c 'echo "deb [arch=amd64,i386,ppc64el] http://mirrors.ukfast.co.uk/sites/mariadb/repo/10.2/debian stretch main" > /etc/apt/sources.list.d/mariadb.list'
+apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8
 
 echo " * Updating repolist"
 apt update
