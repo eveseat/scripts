@@ -82,7 +82,6 @@ services:
 
   seat-cron:
     image: eveseat/eveseat-cron
-    image: seat-cron
     container_name: seat-cron
     restart: always
     environment:
