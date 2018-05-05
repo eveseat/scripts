@@ -7,7 +7,7 @@ services:
     container_name: seat-mariadb
     restart: always
     environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: yes
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
@@ -81,8 +81,7 @@ services:
       - seat-network
 
   seat-cron:
-    build:
-      context: ./docker-eveseat-cron
+    image: eveseat/eveseat-cron
     image: seat-cron
     container_name: seat-cron
     restart: always
