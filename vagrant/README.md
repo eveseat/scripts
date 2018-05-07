@@ -20,7 +20,9 @@ Connect to your SeAT instance by browsing to `http://192.168.33.100:8080`.
 By Default, you will receive a synced folder inside your vagrant-folder called `vm-files`.
 You are able to route your IDE to this folder and work from there.
 If you whish to change the behavioud and sync a different folder you need to add
-the following into your `Vagrantfile`: `config.vm.synced_folder "{your/absolute/local/path}", "/vagrant/vm-files/docker-compose-dev/seat"`.
+the following into your `Vagrantfile`: 
+
+`config.vm.synced_folder "{your/absolute/local/path}", "/vagrant/vm-files/docker-compose-dev/seat"`.
 
 # Woth noting
 
