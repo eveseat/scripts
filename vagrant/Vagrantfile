@@ -1,8 +1,43 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+plugins_dependencies = %w( vagrant-docker-compose )
+plugin_status = false
+plugins_dependencies.each do |plugin_name|
+  unless Vagrant.has_plugin? plugin_name
+    system("vagrant plugin install #{plugin_name}")
+    plugin_status = true
+    puts " #{plugin_name}  Dependencies installed"
+  end
+end
+
+# Restart Vagrant if any new plugin installed
+if plugin_status === true
+  exec "vagrant #{ARGV.join' '}"
+else
+  puts "All Plugin Dependencies allready installed"
+end
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/xenial64"
+  config.vm.hostname = "docker"
+  config.vm.box = "bento/ubuntu-16.04"
+  config.vm.network "private_network", ip: "192.168.33.100"
+
+  config.vm.provider "virtualbox" do |v|
+    v.name = "docker"
+    v.memory = 4096
+    v.cpus = 2
+  end
+
   config.vm.provision :shell, path: "provisions/bootstrap.sh"
-  config.vm.network "private_network", type: "dhcp"
+  config.vm.provision :docker
+  config.vm.provision :docker_compose,
+    compose_version: "1.21.0",
+    yml: "/vagrant/vm-files/docker-compose-dev/docker-compose.yml",
+    #rebuild: true,
+    run: "always"
 end
