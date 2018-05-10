@@ -33,7 +33,7 @@ if [ ! -f /var/www/seat/vendor/autoload.php ]; then
     php artisan db:seed --class=Seat\\Services\\database\\seeds\\ScheduleSeeder
 
     # Download the SDE
-    php artisan eve:update-sde -n
+    php artisan eve:update:sde -n
 fi
 
 # Wait for the database
