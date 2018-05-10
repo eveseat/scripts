@@ -16,5 +16,5 @@ php artisan migrate
 php artisan db:seed --class=Seat\\Notifications\\database\\seeds\\ScheduleSeeder
 php artisan db:seed --class=Seat\\Services\\database\\seeds\\NotificationTypesSeeder
 php artisan db:seed --class=Seat\\Services\\database\\seeds\\ScheduleSeeder
-php artisan eve:update-sde -n
+php artisan eve:update:sde -n
 
