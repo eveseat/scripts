@@ -24,9 +24,26 @@ REMI=remi-release-7.rpm && curl -O http://rpms.remirepo.net/enterprise/$REMI && 
 echo " * Configuring Remi GPG"
 rpm --import http://rpms.remirepo.net/RPM-GPG-KEY-remi
 
-echo " * Enabling Remi and php55 repository"
+echo " * Installing MariaDB 10.2 Repository"
+cat <<EOT >> /etc/yum.repos.d/MariaDB.repo
+# MariaDB 10.2 CentOS repository list - created 2018-05-10 21:43 UTC
+# http://downloads.mariadb.org/mariadb/repositories/
+[mariadb]
+name = MariaDB
+baseurl = http://yum.mariadb.org/10.2/centos7-amd64
+gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+gpgcheck=1
+EOT
+
+echo " * Configuring MariaDB 10.2 GPG"
+rpm --import https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+
+echo " * Enabling Remi and php 7.1 repository"
 yum install yum-utils -y
-yum-config-manager --enable remi,remi-php70
+yum-config-manager --enable remi-php71
+
+echo " * Running yum clean all"
+yum clean all
 
 echo " * Installing installer dependencies"
 yum install -y php-cli php-mysql php-posix git unzip
