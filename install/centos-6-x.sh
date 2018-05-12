@@ -61,7 +61,7 @@ echo " * Running yum clean all"
 yum clean all
 
 echo " * Installing installer dependencies"
-yum install -y php-cli php-mysql php-posix git unzip
+yum install -y php-cli php-mysqlnd php-posix git unzip
 
 echo " * Installing SeAT tool"
 curl -fsSL https://git.io/vXb0u -o /usr/local/bin/seat
