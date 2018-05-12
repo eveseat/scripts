@@ -31,6 +31,14 @@ REMI=remi-release-6.rpm && curl -O http://rpms.remirepo.net/enterprise/$REMI && 
 echo " * Configuring Remi GPG"
 rpm --import http://rpms.remirepo.net/RPM-GPG-KEY-remi
 
+echo " * Installing Ghettoforge Repository"
+# Download and install the latest release
+GF=gf-release-latest.gf.el6.noarch.rpm && curl -O http://mirror.ghettoforge.org/distributions/gf/$GF && yum localinstall -y $GF && rm -f $GF
+
+echo " * Configuring Ghettoforge GPG"
+# Import the GhettoForge signing keys
+rpm --import "http://mirror.ghettoforge.org/distributions/gf/RPM-GPG-KEY-gf.el6"
+
 echo " * Installing MariaDB 10.2 Repository"
 cat <<EOT >> /etc/yum.repos.d/MariaDB.repo
 # MariaDB 10.2 CentOS repository list - created 2018-05-12 15:58 UTC
@@ -47,7 +55,7 @@ rpm --import https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 
 echo " * Enabling Remi php 7.1 repository"
 yum install yum-utils -y
-yum-config-manager --enable remi-php71
+yum-config-manager --enable remi-php71,gf-plus
 
 echo " * Running yum clean all"
 yum clean all
