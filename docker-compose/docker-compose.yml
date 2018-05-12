@@ -27,7 +27,7 @@ services:
       - seat-network
 
   nginx:
-    image: eveseat/eveseat-nginx
+    image: eveseat/eveseat-nginx:latest
     depends_on:
       - seat-app
     container_name: seat-nginx
@@ -46,7 +46,7 @@ services:
       - seat-network
 
   seat-app:
-    image: eveseat/eveseat-app
+    image: eveseat/eveseat-app:latest
     container_name: seat-app
     restart: always
     environment:
@@ -64,7 +64,7 @@ services:
       - seat-network
 
   seat-worker:
-    image: eveseat/eveseat-worker
+    image: eveseat/eveseat-worker:latest
     container_name: seat-worker
     restart: always
     environment:
@@ -82,7 +82,7 @@ services:
       - seat-network
 
   seat-cron:
-    image: eveseat/eveseat-cron
+    image: eveseat/eveseat-cron:latest
     container_name: seat-cron
     restart: always
     environment:
