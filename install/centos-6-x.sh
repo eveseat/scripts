@@ -53,7 +53,7 @@ EOT
 echo " * Configuring MariaDB 10.2 GPG"
 rpm --import https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 
-echo " * Enabling Remi php 7.1 repository"
+echo " * Enabling repos"
 yum install yum-utils -y
 yum-config-manager --enable remi-php71,gf-plus
 
