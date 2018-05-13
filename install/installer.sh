@@ -25,7 +25,7 @@ do
             break
             ;;
         "Ubuntu 18x")
-            echo ' * Downloading and running Ubuntu 16x installer'
+            echo ' * Downloading and running Ubuntu 18x installer'
             bash <(curl -fsSL https://raw.githubusercontent.com/eveseat/scripts/master/install/ubuntu-18-x.sh)
             break
             ;;
