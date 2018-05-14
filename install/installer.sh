@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# 2016 Leon Jacobs
+# 2016-2018 Leon Jacobs & SeAT Contributors
 
 echo ' * SeAT Installer Operating System Selection'
 
 PS3=' * Please select the target operating system: '
-options=("CentOS 6" "CentOS 7" "Ubuntu 16x" "Debian 8x" "Debian 9x" "Quit")
+options=("CentOS 6" "CentOS 7" "Ubuntu 16x" "Ubuntu 18x" "Debian 8x" "Debian 9x" "Quit")
 select opt in "${options[@]}"
 do
     case $opt in
@@ -22,6 +22,11 @@ do
         "Ubuntu 16x")
             echo ' * Downloading and running Ubuntu 16x installer'
             bash <(curl -fsSL https://raw.githubusercontent.com/eveseat/scripts/master/install/ubuntu-16-x.sh)
+            break
+            ;;
+        "Ubuntu 18x")
+            echo ' * Downloading and running Ubuntu 18x installer'
+            bash <(curl -fsSL https://raw.githubusercontent.com/eveseat/scripts/master/install/ubuntu-18-x.sh)
             break
             ;;
         "Debian 8x")
