@@ -56,7 +56,8 @@ services:
       - ./.env
     volumes:
       - "seat-code:/var/www/seat"
-      - ./logs:/var/www/seat/storage/logs
+      # Remove the comment below to enable SeAT logs to disk.
+      #- ./logs:/var/www/seat/storage/logs
     depends_on:
       - mariadb
       - redis
