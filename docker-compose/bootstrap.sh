@@ -55,6 +55,8 @@ curl -L https://raw.githubusercontent.com/eveseat/scripts/master/docker-compose/
 
 echo "Generating a random database password and writing it to the .env file."
 sed -i -- 's/DB_PASSWORD=i_should_be_changed/DB_PASSWORD='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c22 ; echo '')'/g' .env
+echo "Generating an application key and writing it to the .env file."
+sed -i -- 's/APP_KEY=insecure/APP_KEY='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c36 ; echo '')'/g' .env
 
 echo "Starting docker stack. This will download the images too. Please wait...\n"
 docker-compose up -d
