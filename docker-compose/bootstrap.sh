@@ -58,7 +58,7 @@ sed -i -- 's/DB_PASSWORD=i_should_be_changed/DB_PASSWORD='$(head /dev/urandom | 
 echo "Generating an application key and writing it to the .env file."
 sed -i -- 's/APP_KEY=insecure/APP_KEY='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c32 ; echo '')'/g' .env
 
-echo "Starting docker stack. This will download the images too. Please wait...\n"
+echo "Starting docker stack. This will download the images too. Please wait..."
 docker-compose up -d
 
 echo "Images downloaded. The containers are now iniliatising. To check what is happening, run 'docker-compose logs --tail 5 -f' in /opt/seat-docker"
