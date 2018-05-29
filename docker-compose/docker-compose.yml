@@ -15,6 +15,11 @@ services:
       - "mariadb-data:/var/lib/mysql"
     networks:
       - seat-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10Mb"
+        max-file: "5"
 
   redis:
     image: redis:3
@@ -25,6 +30,11 @@ services:
       - "redis-data:/data"
     networks:
       - seat-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10Mb"
+        max-file: "5"
 
   nginx:
     image: eveseat/eveseat-nginx:latest
@@ -44,6 +54,11 @@ services:
     command: /bin/sh -c "envsubst '${NGINX_HOST}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
     networks:
       - seat-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10Mb"
+        max-file: "5"
 
   seat-app:
     image: eveseat/eveseat-app:latest
@@ -63,6 +78,11 @@ services:
       - redis
     networks:
       - seat-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10Mb"
+        max-file: "5"
 
   seat-worker:
     image: eveseat/eveseat-worker:latest
@@ -81,6 +101,11 @@ services:
       - redis
     networks:
       - seat-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10Mb"
+        max-file: "5"
 
   seat-cron:
     image: eveseat/eveseat-cron:latest
@@ -99,6 +124,11 @@ services:
       - redis
     networks:
       - seat-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10Mb"
+        max-file: "5"
 
 volumes:
     seat-code:
