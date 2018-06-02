@@ -21,11 +21,11 @@
         "league/csv": "^9.1",
         "predis/predis": "^1.1",
         "theiconic/php-ga-measurement-protocol": "^2.0",
-        "yajra/laravel-datatables-oracle": "~6",
-        "yzalis/supervisor": "^1.1"
+        "yajra/laravel-datatables-oracle": "~6"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
+        "nunomaduro/collision": "^2.0",
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~6.0"
