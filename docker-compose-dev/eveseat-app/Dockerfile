@@ -1,8 +1,8 @@
-FROM php:7.1-fpm-alpine
+FROM php:7.2-fpm-alpine
 
 RUN apk add --no-cache git zip unzip curl \
-    libpng-dev libmcrypt-dev bzip2-dev icu-dev mariadb-client && \
-    docker-php-ext-install pdo_mysql gd bz2 intl mcrypt pcntl
+    libpng-dev bzip2-dev icu-dev mariadb-client && \
+    docker-php-ext-install pdo_mysql gd bz2 intl pcntl
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin \
     --filename=composer && hash -r
 
