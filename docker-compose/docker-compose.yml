@@ -13,6 +13,7 @@ services:
       MYSQL_DATABASE: ${DB_DATABASE}
     volumes:
       - "mariadb-data:/var/lib/mysql"
+      - "./my.cnf:/etc/mysql/my.cnf"
     networks:
       - seat-network
     logging:
