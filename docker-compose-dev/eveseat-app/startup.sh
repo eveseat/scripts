@@ -48,6 +48,6 @@ php artisan vendor:publish --force --all
 php artisan migrate
 
 # Regenerate API documentation
-php artisan l5-swagger:generate
+#php artisan l5-swagger:generate
 
 php-fpm -F
