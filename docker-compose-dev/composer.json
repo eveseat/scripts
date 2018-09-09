@@ -22,7 +22,8 @@
         "predis/predis": "^1.1",
         "theiconic/php-ga-measurement-protocol": "^2.0",
         "yajra/laravel-datatables-oracle": "~6",
-        "yzalis/supervisor": "^1.1"
+        "yzalis/supervisor": "^1.1",
+        "zircote/swagger-php": "2.*"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
