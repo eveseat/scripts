@@ -52,6 +52,7 @@ cd $SEAT_DOCKER_INSTALL
 echo "Grabbing docker-compose and .env file"
 curl -L https://raw.githubusercontent.com/eveseat/scripts/master/docker-compose/docker-compose.yml -o $SEAT_DOCKER_INSTALL/docker-compose.yml
 curl -L https://raw.githubusercontent.com/eveseat/scripts/master/docker-compose/.env -o $SEAT_DOCKER_INSTALL/.env
+curl -L https://raw.githubusercontent.com/eveseat/scripts/master/docker-compose/my.cnf -o $SEAT_DOCKER_INSTALL/my.cnf
 
 echo "Generating a random database password and writing it to the .env file."
 sed -i -- 's/DB_PASSWORD=i_should_be_changed/DB_PASSWORD='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c22 ; echo '')'/g' .env
