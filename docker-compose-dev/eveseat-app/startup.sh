@@ -37,7 +37,7 @@ if [ ! -f /var/www/seat/vendor/autoload.php ]; then
 fi
 
 # Wait for the database
-while ! mysqladmin ping -hmariadb --silent; do
+while ! mysqladmin ping -hmariadb -u$MYSQL_USER -p$MYSQL_PASSWORD --silent; do
 
     echo "MariaDB container might not be ready yet... sleeping..."
     sleep 3
