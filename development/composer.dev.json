@@ -21,7 +21,8 @@
         "league/csv": "^9.1",
         "predis/predis": "^1.1",
         "theiconic/php-ga-measurement-protocol": "^2.0",
-        "yajra/laravel-datatables-oracle": "~8"
+        "yajra/laravel-datatables-oracle": "~8",
+        "zircote/swagger-php": "2.*"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
