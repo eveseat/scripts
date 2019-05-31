@@ -19,7 +19,7 @@ services:
       - "${MYSQL_EXTERNAL_PORT}:3306"
 
   redis:
-    image: redis:3
+    image: redis:5-alpine
     container_name: seat-redis
     command: redis-server --appendonly yes
     restart: always
@@ -29,7 +29,7 @@ services:
       - seat-network
 
   nginx:
-    image: nginx:1.13-alpine
+    image: nginx:1.16-alpine
     depends_on:
       - seat-app
     container_name: seat-nginx
