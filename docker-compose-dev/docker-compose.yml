@@ -39,6 +39,8 @@ services:
     volumes:
       - ${SEAT_CODE}/public:/var/www/seat/public
       - ./config/nginx.conf.template:/etc/nginx/nginx.conf.template
+      - ${NGINX_CERTIFICATE_PATH}:/etc/ssl/fullchain.pem
+      - ${NGINX_PRIVATE_KEY_PATH}:/etc/ssl/privkey.pem
       # Remove the comment below to enable nginx logs to disk.
       #- ./logs/nginx/:/var/log/nginx/
     ports:
