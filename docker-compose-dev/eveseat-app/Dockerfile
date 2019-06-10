@@ -1,10 +1,8 @@
 FROM php:7.3-fpm-alpine
 
-RUN apk update && \
-    apk add --no-cache git zip unzip curl g++ make autoconf libpng-dev bzip2-dev icu-dev yaml-dev mariadb-client && \
-	pecl install yaml && \
-    docker-php-ext-install pdo_mysql gd bz2 intl pcntl && \
-	docker-php-ext-enable yaml
+RUN apk add --no-cache git zip unzip curl \
+    libpng-dev bzip2-dev icu-dev mariadb-client && \
+    docker-php-ext-install pdo_mysql gd bz2 intl pcntl
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin \
     --filename=composer && hash -r
 
