@@ -19,7 +19,7 @@ services:
       - "${MYSQL_EXTERNAL_PORT}:3306"
 
   redis:
-    image: redis:3
+    image: redis:5-alpine
     container_name: seat-redis
     command: redis-server --appendonly yes
     restart: always
@@ -29,7 +29,7 @@ services:
       - seat-network
 
   nginx:
-    image: nginx:1.13-alpine
+    image: nginx:1.16-alpine
     depends_on:
       - seat-app
     container_name: seat-nginx
@@ -39,6 +39,8 @@ services:
     volumes:
       - ${SEAT_CODE}/public:/var/www/seat/public
       - ./config/nginx.conf.template:/etc/nginx/nginx.conf.template
+      - ${NGINX_CERTIFICATE_PATH}:/etc/ssl/fullchain.pem
+      - ${NGINX_PRIVATE_KEY_PATH}:/etc/ssl/privkey.pem
       # Remove the comment below to enable nginx logs to disk.
       #- ./logs/nginx/:/var/log/nginx/
     ports:

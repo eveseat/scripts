@@ -37,4 +37,4 @@ echo "$SECURE_MYSQL"
 echo "Configurating SeAT database and user"
 mysql -uroot -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE seat;"
 mysql -uroot -p$MYSQL_ROOT_PASSWORD -e "GRANT ALL ON seat.* to seat@localhost IDENTIFIED BY 'seat';"
-
+mysql -uroot -p$MYSQL_ROOT_PASSWORD -e "GRANT ALL ON information_schema.* to seat@localhost IDENTIFIED BY 'seat';"
