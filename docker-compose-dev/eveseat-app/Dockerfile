@@ -3,6 +3,11 @@ FROM php:7.3-fpm-alpine
 RUN apk add --no-cache git zip unzip curl \
     libpng-dev bzip2-dev icu-dev mariadb-client && \
     docker-php-ext-install pdo_mysql gd bz2 intl pcntl
+
+RUN apk add --no-cache $PHPIZE_DEPS && \
+    pecl install redis && \
+    docker-php-ext-enable redis
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin \
     --filename=composer && hash -r
 

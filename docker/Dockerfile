@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian:buster
 
 MAINTAINER Leon Jacobs <leonja511@gmail.com>
 
@@ -17,10 +17,6 @@ RUN apt-get update && \
     lsb-release \
     ca-certificates && \
 
-    # add the php7 repo
-    wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg && \
-    echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list && \
-
     # install seat dependencies
     apt-get update && \
     apt-get install -y --no-install-recommends \ 
@@ -32,13 +28,13 @@ RUN apt-get update && \
     # php && nginx
     php \
     php-cli \
-    php-mcrypt \
     php-intl \
     php-mysql \
     php-curl \
     php-gd \
     php-mbstring \
     php-bz2 \ 
+    php-redis \
     php-xml \
     php-fpm \
     nginx \
@@ -88,10 +84,10 @@ RUN chown -R www-data:www-data /seat && \
 ADD nginx/default /etc/nginx/sites-available/default
 
 # configure php-fpm
-RUN sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php/7.0/fpm/php-fpm.conf
-RUN sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/7.0/fpm/php.ini
-RUN sed -i "s/listen = \/run\/php\/php7.0-fpm.sock/listen = \/var\/run\/php7.0-fpm.sock/" /etc/php/7.0/fpm/pool.d/www.conf
-RUN sed -i "s/pid = \/run\/php\/php7.0-fpm.pid/pid = \/var\/run\/php7.0-fpm.pid/" /etc/php/7.0/fpm/php-fpm.conf
+RUN sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php/7.3/fpm/php-fpm.conf
+RUN sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/7.3/fpm/php.ini
+RUN sed -i "s/listen = \/run\/php\/php7.3-fpm.sock/listen = \/var\/run\/php7.3-fpm.sock/" /etc/php/7.3/fpm/pool.d/www.conf
+RUN sed -i "s/pid = \/run\/php\/php7.3-fpm.pid/pid = \/var\/run\/php7.3-fpm.pid/" /etc/php/7.3/fpm/php-fpm.conf
 
 # add the supervisor configurations
 ADD supervisor/mysql.conf /etc/supervisor/conf.d/

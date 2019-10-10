@@ -21,7 +21,7 @@ LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
 
 echo " * Installing installer dependencies"
-apt install php7.1-cli php7.1-mysql unzip git -y
+apt install php7.2-cli php7.2-mysql unzip git -y
 
 echo " * Installing SeAT tool"
 curl -fsSL https://git.io/vXb0u -o /usr/local/bin/seat

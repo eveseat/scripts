@@ -7,29 +7,26 @@
     "minimum-stability": "alpha",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.1.0",
-        "coduo/php-humanizer": "^2.0",
-        "components/font-awesome": "^4.7",
-        "darkaonline/l5-swagger": "5.5.*",
-        "doctrine/dbal": "^2.6",
-        "fideloper/proxy": "~3.3",
+        "php": ">=7.2.0",
+        "coduo/php-humanizer": "^3.0",
+        "components/font-awesome": "^5.9",
+        "darkaonline/l5-swagger": "^6.0",
+        "doctrine/dbal": "^2.9",
+        "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "^6.3",
-        "laravel/framework": "5.5.*",
-        "laravel/horizon": "^1.0",
-        "laravel/socialite": "^3.0",
+        "laravel/framework": "^6.2",
+        "laravel/horizon": "^3.4",
+        "laravel/socialite": "^4.2",
         "laravel/tinker": "~1.0",
-        "league/csv": "^9.1",
-        "predis/predis": "^1.1",
-        "theiconic/php-ga-measurement-protocol": "^2.0",
-        "yajra/laravel-datatables-oracle": "~8",
+        "yajra/laravel-datatables-oracle": "~9",
         "zircote/swagger-php": "2.*"
     },
     "require-dev": {
-        "filp/whoops": "~2.0",
-        "nunomaduro/collision": "^2.0",
+        "facade/ignition": "^1.4",
+        "nunomaduro/collision": "^3.0",
         "fzaninotto/faker": "~1.4",
-        "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~6.0"
+        "mockery/mockery": "^1.0",
+        "phpunit/phpunit": "~8.0"
     },
     "autoload": {
         "classmap": [
