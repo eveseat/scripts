@@ -7,7 +7,7 @@
     "minimum-stability": "alpha",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.2.0",
+        "php": ">=7.3.0",
         "coduo/php-humanizer": "^3.0",
         "components/font-awesome": "^5.9",
         "darkaonline/l5-swagger": "^6.0",
