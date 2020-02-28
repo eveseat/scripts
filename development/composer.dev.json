@@ -4,32 +4,45 @@
     "keywords": ["eve", "online", "corporation", "management", "api"],
     "license": "GPL-2.0",
     "type": "project",
-    "minimum-stability": "alpha",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.1.0",
-        "coduo/php-humanizer": "^2.0",
-        "components/font-awesome": "^4.7",
-        "darkaonline/l5-swagger": "5.5.*",
-        "doctrine/dbal": "^2.6",
-        "fideloper/proxy": "~3.3",
-        "guzzlehttp/guzzle": "^6.3",
-        "laravel/framework": "5.5.*",
-        "laravel/horizon": "^1.0",
-        "laravel/socialite": "^3.0",
-        "laravel/tinker": "~1.0",
-        "league/csv": "^9.1",
-        "predis/predis": "^1.1",
-        "theiconic/php-ga-measurement-protocol": "^2.0",
-        "yajra/laravel-datatables-oracle": "~8",
-        "zircote/swagger-php": "2.*"
+        "php": "^7.3",
+    "almasaeed2010/adminlte": "^3.0",
+    "coduo/php-humanizer": "^3.0",
+    "components/font-awesome": "^5.9",
+    "darkaonline/l5-swagger": "^6.0",
+    "datatables/datatables": "^1.10",
+    "doctrine/dbal": "^2.10",
+    "fideloper/proxy": "^4.0",
+    "guzzlehttp/guzzle": "^6.3",
+    "intervention/image": "^2.5",
+    "laravel/framework": "^6.2",
+    "laravel/horizon": "^3.4",
+    "laravel/slack-notification-channel": "^2.0",
+    "laravel/tinker": "^1.0",
+    "lasserafn/php-initial-avatar-generator": "^4.0",
+    "orchestra/database": "^4.0",
+    "orchestra/testbench-core": "^4.3",
+    "socialiteproviders/manager": "^3.4",
+    "twbs/bootstrap": "^4.3",
+    "web-token/jwt-checker": "^2.1",
+    "web-token/jwt-easy": "^2.1",
+    "web-token/jwt-signature": "^2.1",
+    "web-token/jwt-signature-algorithm-ecdsa": "^2.1",
+    "web-token/jwt-signature-algorithm-hmac": "^2.1",
+    "web-token/jwt-signature-algorithm-rsa": "^2.1",
+    "yajra/laravel-datatables-oracle": "~9",
+    "yajra/laravel-datatables-buttons": "^4.8",
+    "zircote/swagger-php": "2.*"
     },
     "require-dev": {
-        "filp/whoops": "~2.0",
-        "nunomaduro/collision": "^2.0",
-        "fzaninotto/faker": "~1.4",
-        "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~6.0"
+    "facade/ignition": "^1.4",
+    "fzaninotto/faker": "^1.4",
+    "mockery/mockery": "^1.0",
+    "nunomaduro/collision": "^3.0",
+    "nunomaduro/larastan": "^0.4.3",
+    "phpunit/phpunit": "^8.0"
     },
     "autoload": {
         "classmap": [
@@ -38,14 +51,6 @@
         ],
         "psr-4": {
             "App\\": "app/",
-
-            "Seat\\Api\\": "packages/eveseat/api/src/",
-            "Seat\\Console\\": "packages/eveseat/console/src/",
-            "Seat\\Eveapi\\": "packages/eveseat/eveapi/src/",
-            "Seat\\Services\\": "packages/eveseat/services/src/",
-            "Seat\\Web\\": "packages/eveseat/web/src/",
-            "Seat\\Notifications\\": "packages/eveseat/notifications/src/",
-            "Seat\\Eseye\\": "packages/eveseat/eseye/src/"
         },
         "files": [
             "packages/eveseat/services/src/Helpers/helpers.php"
@@ -53,8 +58,17 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
-        }
+            "Seat\\Api\\": "packages/eveseat/api/src/",
+            "Seat\\Console\\": "packages/eveseat/console/src/",
+            "Seat\\Eveapi\\": "packages/eveseat/eveapi/src/",
+            "Seat\\Notifications\\": "packages/eveseat/notifications/src/",
+            "Seat\\Services\\": "packages/eveseat/services/src/",
+            "Seat\\Web\\": "packages/eveseat/web/src/",
+            "Seat\\Eseye\\": "packages/eveseat/eseye/src/"
+        },
+        "files": [
+            "packages/eveseat/services/src/Helpers/helpers.php"
+          ]
     },
     "extra": {
         "laravel": {
