@@ -8,6 +8,10 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.3",
+        "ext-gmp": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
         "almasaeed2010/adminlte": "^3.0",
         "coduo/php-humanizer": "^3.0",
         "components/font-awesome": "^5.9",
