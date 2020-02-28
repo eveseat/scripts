@@ -60,6 +60,8 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+    env_file:
+      - ./.env
     volumes:
       - ${SEAT_CODE}:/var/www/seat
     depends_on:
@@ -74,6 +76,8 @@ services:
     image: eveseat-worker
     container_name: seat-worker
     restart: always
+    env_file:
+      - ./.env
     volumes:
       - ${SEAT_CODE}:/var/www/seat
     depends_on:
@@ -93,6 +97,8 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+    env_file:
+      - ./.env
     volumes:
       - ${SEAT_CODE}:/var/www/seat
     depends_on:
