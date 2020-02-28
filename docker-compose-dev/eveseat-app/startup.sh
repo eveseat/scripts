@@ -30,7 +30,7 @@ if [ ! -f /var/www/seat/vendor/autoload.php ]; then
     php artisan migrate
 
     # seed the scheduler table
-    php artisan db:seed --class=Seat\\Services\\database\\seeds\\ScheduleSeeder
+    php artisan db:seed --class=Seat\\Console\\database\\seeds\\ScheduleSeeder
 
     # Download the SDE
     php artisan eve:update:sde -n
