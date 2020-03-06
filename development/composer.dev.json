@@ -54,7 +54,7 @@
             "database/factories"
         ],
         "psr-4": {
-            "App\\": "app/",
+            "App\\": "app/"
         },
         "files": [
             "packages/eveseat/services/src/Helpers/helpers.php"
