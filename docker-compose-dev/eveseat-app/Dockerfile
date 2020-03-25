@@ -10,7 +10,7 @@ RUN apk add --no-cache git zip unzip curl libzip-dev g++ gcc make \
         --with-png-dir=/usr/lib/ \
         --with-jpeg-dir=/usr/lib/ \
         --with-gd && \
-    docker-php-ext-install pdo_mysql gd bz2 intl pcntl gmp zip && \
+    docker-php-ext-install pdo_mysql gd bz2 intl pcntl gmp zip opcache && \
     docker-php-ext-enable redis
     
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin \
