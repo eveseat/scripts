@@ -25,10 +25,7 @@ services:
   redis:
     image: redis:5-alpine
     container_name: seat-redis
-    command: redis-server --appendonly yes
     restart: always
-    volumes:
-      - "redis-data:/data"
     networks:
       - seat-network
     logging:
