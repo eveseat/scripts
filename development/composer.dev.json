@@ -37,8 +37,7 @@
         "web-token/jwt-signature-algorithm-hmac": "^2.1",
         "web-token/jwt-signature-algorithm-rsa": "^2.1",
         "yajra/laravel-datatables-oracle": "~9",
-        "yajra/laravel-datatables-buttons": "^4.8",
-        "zircote/swagger-php": "2.*"
+        "yajra/laravel-datatables-buttons": "^4.8"
     },
     "require-dev": {
         "facade/ignition": "^1.4",
