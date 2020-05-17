@@ -5,7 +5,7 @@
 echo ' * SeAT Installer Operating System Selection'
 
 PS3=' * Please select the target operating system: '
-options=("CentOS 6" "CentOS 7" "Ubuntu 16x" "Ubuntu 18x" "Debian 8x" "Debian 9x" "Quit")
+options=("CentOS 6" "CentOS 7" "Ubuntu 16x" "Ubuntu 18x" "Ubuntu 20x" "Debian 8x" "Debian 9x" "Quit")
 select opt in "${options[@]}"
 do
     case $opt in
@@ -27,6 +27,11 @@ do
         "Ubuntu 18x")
             echo ' * Downloading and running Ubuntu 18x installer'
             bash <(curl -fsSL https://raw.githubusercontent.com/eveseat/scripts/master/install/ubuntu-18-x.sh)
+            break
+            ;;
+        "Ubuntu 20x")
+            echo ' * Downloading and running Ubuntu 20x installer'
+            bash <(curl -fsSL https://raw.githubusercontent.com/eveseat/scripts/master/install/ubuntu-20-x.sh)
             break
             ;;
         "Debian 8x")
