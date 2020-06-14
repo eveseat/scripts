@@ -44,17 +44,27 @@ services:
     container_name: seat-nginx
     restart: always
     environment:
-      - NGINX_HOST=${NGINX_HOST}
+      - NGINX_HOST=${HOST}
     volumes:
       - "seat-code:/var/www/seat"
       # Remove the comment below to enable nginx logs to disk.
       #- ./logs/nginx/:/var/log/nginx/
-    ports:
-      - "${NGINX_HTTP}:80"
-      - "${NGINX_HTTPS}:443"
-    command: /bin/sh -c "envsubst '${NGINX_HOST}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+    command: /bin/sh -c "envsubst '${HOST}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
     networks:
       - seat-network
+      - traefik-network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=docker-compose_traefik-network
+      - traefik.http.middlewares.seat-https-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.seat-https-redirect.redirectscheme.permanent=true
+      - traefik.http.routers.seat.middlewares=seat-https-redirect
+      - traefik.http.routers.seat.entrypoints=seat
+      - traefik.http.routers.seat.rule=Host(`${HOST}`)
+      - traefik.http.routers.seat-secure.entrypoints=seat-secure
+      - traefik.http.routers.seat-secure.rule=Host(`${HOST}`)
+      - traefik.http.routers.seat-secure.tls=true
+      - traefik.http.routers.seat-secure.tls.certresolver=seat
     logging:
       driver: "json-file"
       options:
@@ -131,6 +141,40 @@ services:
         max-size: "10Mb"
         max-file: "5"
 
+  traefik:
+    image: traefik:v2.0
+    container_name: seat-traefik
+    restart: always
+    networks:
+      - traefik-network
+    ports:
+      - 80:80
+      - 8080:8080
+      - 443:443
+    depends_on:
+      - nginx
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik.entrypoints=traefik
+      - traefik.http.routers.traefik.rule=Host(`localhost`)
+      - traefik.http.routers.traefik.service=api@internal
+    environment:
+      - TRAEFIK_API=true
+      - TRAEFIK_API_INSECURE=true
+      - TRAEFIK_API_DASHBOARD=true
+      - TRAEFIK_PROVIDERS_DOCKER=true
+      - TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=false
+      - TRAEFIK_ENTRYPOINTS_seat=true
+      - TRAEFIK_ENTRYPOINTS_seat_ADDRESS=:80
+      - TRAEFIK_ENTRYPOINTS_seat-secure=true
+      - TRAEFIK_ENTRYPOINTS_seat-secure_ADDRESS=:443
+      - TRAEFIK_CERTIFICATESRESOLVERS_seat=true
+      - TRAEFIK_CERTIFICATESRESOLVERS_seat_ACME_EMAIL=${ACME_EMAIL}
+      - TRAEFIK_CERTIFICATESRESOLVERS_seat_ACME_HTTPCHALLENGE=true
+      - TRAEFIK_CERTIFICATESRESOLVERS_seat_ACME_HTTPCHALLENGE_ENTRYPOINT=seat
+
 volumes:
     seat-code:
     redis-data:
@@ -138,3 +182,4 @@ volumes:
 
 networks:
     seat-network:
+    traefik-network:
