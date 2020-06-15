@@ -149,21 +149,12 @@ services:
       - traefik-network
     ports:
       - 80:80
-      - 8080:8080
       - 443:443
     depends_on:
       - nginx
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.traefik.entrypoints=traefik
-      - traefik.http.routers.traefik.rule=Host(`localhost`)
-      - traefik.http.routers.traefik.service=api@internal
     environment:
-      - TRAEFIK_API=true
-      - TRAEFIK_API_INSECURE=true
-      - TRAEFIK_API_DASHBOARD=true
       - TRAEFIK_PROVIDERS_DOCKER=true
       - TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=false
       - TRAEFIK_ENTRYPOINTS_seat=true
