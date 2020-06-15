@@ -142,7 +142,7 @@ services:
         max-file: "5"
 
   traefik:
-    image: traefik:v2.0
+    image: traefik:v2.2
     container_name: seat-traefik
     restart: always
     networks:
