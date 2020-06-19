@@ -58,10 +58,27 @@ echo "Generating a random database password and writing it to the .env file."
 sed -i -- 's/DB_PASSWORD=i_should_be_changed/DB_PASSWORD='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c22 ; echo '')'/g' .env
 echo "Generating an application key and writing it to the .env file."
 sed -i -- 's/APP_KEY=insecure/APP_KEY='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c32 ; echo '')'/g' .env
+echo ""
+echo "Please provide a valid e-mail address. It will be used to register an account against Let's Encrypt."
+echo "For more information, see : https://letsencrypt.org"
+read -p "e-mail address: " acme_email
+sed -i -- 's/ACME_EMAIL=change_me@example.com/ACME_EMAIL='$acme_email'/g' .env
+echo ""
 
+echo "Please provide the domain from which SeAT have to be reachable (the base address, without slash or http(s) parts)"
+echo "ie: seat.yourdomain.com"
+read -p "domain: " host_address
+
+sed -i -- 's/HOST=change.me/HOST='$host_address'/g' .env
+sed -i -- 's/APP_URL=https:\/\/change.me/APP_URL=https:\/\/'$host_address'/g' .env
+sed -i -- 's/EVE_CALLBACK_URL=https:\/\/seat.yourdomain.com\/auth\/eve\/callback/EVE_CALLBACK_URL=https:\/\/'$host_address'\/auth\/eve\/callback/g' .env
+
+echo ""
 echo "Starting docker stack. This will download the images too. Please wait..."
+
 docker-compose up -d
 
-echo "Images downloaded. The containers are now iniliatising. To check what is happening, run 'docker-compose logs --tail 5 -f' in /opt/seat-docker"
-
+echo ""
+echo "Images downloaded. The containers are now initialising. To check what is happening, run 'docker-compose logs --tail 5 -f' in /opt/seat-docker"
+echo ""
 echo "Done!"
