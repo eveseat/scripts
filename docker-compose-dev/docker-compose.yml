@@ -11,8 +11,12 @@ services:
       - "mariadb-data:/var/lib/mysql"
     networks:
       - seat-dev-network
-    ports:
-      - "${MYSQL_EXTERNAL_PORT}:3306"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.mariadb.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mariadb.entrypoints=mariadb"
+      - "traefik.tcp.routers.mariadb.service=mariadb"
+      - "traefik.tcp.services.mariadb.loadbalancer.server.port=:3306"
 
   redis:
     image: redis:5-alpine
@@ -31,8 +35,10 @@ services:
       - --providers.docker.exposedByDefault=false
       - --entryPoints.websecure.address=:443
       - --entrypoints.websecure.http.tls=true
+      - --entryPoints.mariadb.address=:3306
     ports:
       - ${TRAEFIK_HTTPS}:443
+      - ${MYSQL_EXTERNAL_PORT}:3306
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
