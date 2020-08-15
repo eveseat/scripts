@@ -4,109 +4,102 @@ services:
 
   mariadb:
     image: mariadb:10.3
-    container_name: seat-mariadb
     restart: always
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "${MYSQL_RANDOM_ROOT_PASSWORD}"
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       - "mariadb-data:/var/lib/mysql"
     networks:
-      - seat-network
+      - seat-dev-network
     ports:
       - "${MYSQL_EXTERNAL_PORT}:3306"
 
   redis:
     image: redis:5-alpine
-    container_name: seat-redis
     restart: always
     networks:
-      - seat-network
+      - seat-dev-network
 
-  nginx:
-    image: nginx:1.16-alpine
-    depends_on:
-      - seat-app
-    container_name: seat-nginx
+  traefik:
+    image: traefik:2.2
     restart: always
-    environment:
-      - NGINX_HOST=${NGINX_HOST}
-    volumes:
-      - ${SEAT_CODE}/public:/var/www/seat/public
-      - ./config/nginx.conf.template:/etc/nginx/nginx.conf.template
-      - ${NGINX_CERTIFICATE_PATH}:/etc/ssl/fullchain.pem
-      - ${NGINX_PRIVATE_KEY_PATH}:/etc/ssl/privkey.pem
-      # Remove the comment below to enable nginx logs to disk.
-      #- ./logs/nginx/:/var/log/nginx/
+    command:
+      - --log.level=INFO
+      - --api=true
+      - --api.dashboard=true
+      - --providers.docker
+      - --providers.docker.exposedByDefault=false
+      - --entryPoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls=true
     ports:
-      - "${NGINX_HTTP}:80"
-      - "${NGINX_HTTPS}:443"
-    command: /bin/sh -c "envsubst '${NGINX_HOST}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+      - ${TRAEFIK_HTTPS}:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`traefik.${WEB_DOMAIN}`)"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.api.entrypoints=websecure"
     networks:
-      - seat-network
+      - seat-dev-network
 
-  seat-app:
+  seat-web:
     build:
-      context: ./eveseat-app
-    image: seat-app
-    container_name: seat-app
+      context: ./seat
+    image: seat
     restart: always
-    environment:
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    command: web
     env_file:
-      - ./.env
+      - .env
     volumes:
       - ${SEAT_CODE}:/var/www/seat
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.seat-web.rule=Host(`web.${WEB_DOMAIN}`)"
+      - "traefik.http.routers.seat-web.entrypoints=websecure"
     depends_on:
       - mariadb
       - redis
     networks:
-      - seat-network
+      - seat-dev-network
 
   seat-worker:
     build:
-      context: ./eveseat-worker
-    image: eveseat-worker
-    container_name: seat-worker
+      context: ./seat
+    image: seat
     restart: always
+    command: worker
     env_file:
-      - ./.env
+      - .env
     volumes:
       - ${SEAT_CODE}:/var/www/seat
     depends_on:
-      - seat-app # so that we can get composer installed
+      - seat-web # so that we can get composer installed
       - mariadb
       - redis
     networks:
-      - seat-network
+      - seat-dev-network
 
   seat-cron:
     build:
-      context: ./eveseat-cron
-    image: seat-cron
-    container_name: seat-cron
+      context: ./seat
+    image: seat
     restart: always
-    environment:
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    command: cron
     env_file:
-      - ./.env
+      - .env
     volumes:
       - ${SEAT_CODE}:/var/www/seat
     depends_on:
+      - seat-web # so that we can get composer installed
       - mariadb
       - redis
     networks:
-      - seat-network
+      - seat-dev-network
 
 volumes:
     redis-data:
     mariadb-data:
 
 networks:
-    seat-network:
+    seat-dev-network:

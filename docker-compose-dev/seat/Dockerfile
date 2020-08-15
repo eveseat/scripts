@@ -1,0 +1,40 @@
+FROM php:7.3-apache-stretch
+
+# OS Packages
+RUN export DEBIAN_FRONTEND=noninteractive \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends \
+    zip unzip mariadb-client redis-tools \
+    libzip-dev libpq-dev libpng-dev libjpeg-dev libgmp-dev libbz2-dev libfreetype6-dev libicu-dev \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# PHP Extentions
+RUN pecl install redis && \
+    docker-php-ext-configure gd \
+        --with-freetype-dir=/usr/lib/ \
+        --with-png-dir=/usr/lib/ \
+        --with-jpeg-dir=/usr/lib/ \
+        --with-gd && \
+    docker-php-ext-install zip pdo pdo_mysql gd bz2 gmp intl pcntl opcache && \
+    docker-php-ext-enable redis
+
+# Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin \
+    --filename=composer && hash -r
+ENV COMPOSER_MEMORY_LIMIT -1
+
+# Expose only the public directory to Apache
+RUN rmdir /var/www/html && \
+    ln -s /var/www/seat/public /var/www/html
+RUN a2enmod rewrite
+EXPOSE 80
+
+# For the dev container, you should mount your code dir.
+VOLUME /var/www/seat
+WORKDIR /var/www/seat
+
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]

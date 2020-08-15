@@ -1,21 +1,27 @@
 #!/bin/bash
 
-echo "Generating an SSL certificate..."
+BRANCH=4.0.x
+declare -a BRANCHED_PACKAGES=("api" "console" "eveapi" "notifications" "services" "web")
+declare -a PACKAGES=("eseye")
 
-openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -config ./config/openssl.cnf -outform PEM -out ./config/fullchain.pem -keyout ./config/privkey.pem
-
-echo "Pulling sources..."
-
-git clone -b 4.0.x https://github.com/eveseat/seat && cd seat
+echo "[i] Pulling parent seat project"
+git clone -b 4.0.x https://github.com/eveseat/seat sources && cd sources
+echo "[i] Getting development composer.json"
 curl -fsSL https://raw.githubusercontent.com/eveseat/scripts/master/development/composer.dev.json > composer.json
 
+echo "[i] Preparing packages directory"
 mkdir -p packages/eveseat && cd packages/eveseat
-git clone -b 4.0.x https://github.com/eveseat/api
-git clone -b 4.0.x https://github.com/eveseat/console
-git clone -b 4.0.x https://github.com/eveseat/eveapi
-git clone https://github.com/eveseat/eseye
-git clone -b 4.0.x https://github.com/eveseat/notifications
-git clone -b 4.0.x https://github.com/eveseat/services
-git clone -b 4.0.x https://github.com/eveseat/web
 
-echo "Done! docker-compose up now!"
+echo "[i] Cloning branched packages"
+for PACKAGE in "${BRANCHED_PACKAGES[@]}"
+do
+    git clone -b $BRANCH https://github.com/eveseat/$PACKAGE
+done
+
+echo "[i] Cloning non branched repos"
+for PACKAGE in "${PACKAGES[@]}"
+do
+    git clone https://github.com/eveseat/$PACKAGE
+done
+
+echo "[i] Done! docker-compose up now!"
