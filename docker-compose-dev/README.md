@@ -6,6 +6,7 @@ This folder contains a development compose file, tyipcally used for local SeAT d
 
 - Clone this repository.
 - Copy out the `docker-compose-dev` folder somewhere convenient or just `cd` to it.
+- Make a copy of the `.env.sample` and name it `.env` with `cp .env.sample .env`
 - If you have an existing SeAT project, set its **full path** in the `.env` file, otherwise, run `bash prepare-source.sh`.
 - Run `docker-compose up -d`
 - Give the containers some time to start up.
